@@ -3,21 +3,24 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>打ち上げは賞レースの後で</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600;800&display=swap');
+
 :root {
-  --bg:#080608; --surface:#130f1a; --surface2:#1c1628;
-  --border:#2e2040; --border-lit:#5a3a78;
-  --accent:#c49ad8; --accent2:#e8c88a;
-  --text:#ede6f5; --text-dim:#7a6a8a; --text-mid:#b0a0c0;
-  --name-color:#ddb8f5;
-  --choice-bg:rgba(28,18,40,0.96); --choice-hover:rgba(196,154,216,0.12);
-  --glow2:rgba(232,200,138,0.1);
+–bg:#080608; –surface:#130f1a; –surface2:#1c1628;
+–border:#2e2040; –border-lit:#5a3a78;
+–accent:#c49ad8; –accent2:#e8c88a;
+–text:#ede6f5; –text-dim:#7a6a8a; –text-mid:#b0a0c0;
+–name-color:#ddb8f5;
+–choice-bg:rgba(28,18,40,0.96); –choice-hover:rgba(196,154,216,0.12);
+–glow2:rgba(232,200,138,0.1);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);height:100%;width:100%;overflow:hidden;touch-action:manipulation}
+html,body{font-family:‘Noto Serif JP’,serif;background:var(–bg);color:var(–text);height:100%;width:100%;overflow:hidden;touch-action:manipulation}
 
 /* ===== SCREENS ===== */
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.6s ease}
@@ -37,11 +40,11 @@ html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--tex
 .title-rule{width:80px;height:1px;margin:24px auto;background:linear-gradient(90deg,transparent,var(–accent),transparent);animation:fadeUp 1.4s .2s ease both}
 .title-sub{font-size:10px;letter-spacing:.5em;color:var(–text-dim);margin-bottom:48px;animation:fadeUp 1.4s .25s ease both}
 .title-menu{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:32px;animation:fadeUp 1.4s .5s ease both}
-.tmb{font-family:‘Noto Serif JP’,serif;font-size:13px;letter-spacing:.4em;color:var(–accent2);background:none;border:1px solid rgba(232,200,138,.35);padding:14px 0;cursor:pointer;transition:all .3s;width:240px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+.tmb{font-family:‘Noto Serif JP’,serif;font-size:13px;letter-spacing:.4em;color:#e8c88a !important;background:none;border:1px solid rgba(232,200,138,.35);padding:14px 0;cursor:pointer;transition:all .3s;width:240px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;-webkit-appearance:none;appearance:none}
 .tmb::before{content:’’;position:absolute;inset:0;background:var(–glow2);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 .tmb:hover::before{transform:scaleX(1)}
 .tmb:hover{border-color:var(–accent2);box-shadow:0 0 24px rgba(232,200,138,.12)}
-.tmb.sub{font-size:12px;color:var(–text-mid);border-color:rgba(176,160,192,.25);padding:12px 0}
+.tmb.sub{font-size:12px;color:#b0a0c0 !important;border-color:rgba(176,160,192,.25);padding:12px 0}
 .tmb.sub:hover{border-color:var(–accent);color:var(–accent)}
 .tmb-icon{font-size:10px;opacity:.7}
 .title-progress{animation:fadeUp 1.4s .7s ease both}
@@ -53,8 +56,8 @@ html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--tex
 #name-screen{background:radial-gradient(ellipse at 50% 55%,#1a1030 0%,#080608 65%);z-index:95}
 .name-wrap{text-align:center;z-index:1}
 .name-label{font-size:10px;letter-spacing:.5em;color:var(–text-dim);margin-bottom:40px}
-.name-field{font-family:‘Shippori Mincho’,serif;font-size:22px;letter-spacing:.25em;background:none;border:none;border-bottom:1px solid var(–accent);color:var(–text);text-align:center;width:260px;padding:10px 0;outline:none;caret-color:var(–accent);-webkit-text-fill-color:var(–text)}
-.btn{font-family:‘Noto Serif JP’,serif;font-size:13px;letter-spacing:.4em;color:var(–accent2);background:none;border:1px solid rgba(232,200,138,.35);padding:15px 52px;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;margin-top:40px}
+.name-field{font-family:‘Shippori Mincho’,serif;font-size:22px;letter-spacing:.25em;background:transparent;border:none;border-bottom:1px solid var(–accent);color:#ede6f5 !important;-webkit-text-fill-color:#ede6f5 !important;text-align:center;width:260px;padding:10px 0;outline:none;caret-color:var(–accent)}
+.btn{font-family:‘Noto Serif JP’,serif;font-size:13px;letter-spacing:.4em;color:#e8c88a !important;background:none;border:1px solid rgba(232,200,138,.35);padding:15px 52px;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;margin-top:40px;-webkit-appearance:none;appearance:none}
 .btn::before{content:’’;position:absolute;inset:0;background:var(–glow2);transform:scaleX(0);transform-origin:left;transition:transform .35s}
 .btn:hover::before{transform:scaleX(1)}
 .btn:hover{border-color:var(–accent2);box-shadow:0 0 32px rgba(232,200,138,.15)}
@@ -85,8 +88,13 @@ html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--tex
 .chara-slot.pos-left{left:10%;transform:translateX(0%);height:88%;z-index:2}
 .chara-slot.pos-center{left:50%;transform:translateX(-50%);height:92%;z-index:3}
 .chara-slot.pos-right{right:10%;transform:translateX(0%);height:88%;z-index:2}
-.chara-slot.pos-far-right{right:0%;transform:translateX(10%);height:85%;z-index:1}
+.chara-slot.pos-far-right{right:-2%;transform:translateX(8%);height:85%;z-index:1}
 .chara-slot.pos-single{left:50%;transform:translateX(-50%);height:92%;z-index:3}
+.chara-slot.pos-p1{left:0%;transform:translateX(0%);height:90%;z-index:2}
+.chara-slot.pos-p2{left:22%;transform:translateX(-50%);height:90%;z-index:2}
+.chara-slot.pos-p3{left:50%;transform:translateX(-50%);height:92%;z-index:3}
+.chara-slot.pos-p4{right:22%;transform:translateX(50%);height:90%;z-index:2}
+.chara-slot.pos-p5{right:0%;transform:translateX(0%);height:90%;z-index:2}
 .chara-slot.size-full{height:92%}
 .chara-slot.size-waist{height:160%;bottom:-58%}
 .chara-slot.size-knee{height:115%;bottom:-18%}
@@ -494,11 +502,11 @@ const SCENARIO = {
     { type:"dialog", speaker:"狐宮 浩信", charas:[{file:"komiya_normal_rafu.png",pos:"center",size:"waist"}], text:'「あれ、さっきの人じゃん」' },
     { type:"dialog", speaker:"heroine", charas:[{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「え？」' },
     { type:"dialog", speaker:"逢田 周二", charas:[{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「スタッフさんですよね？」' },
-    { type:"dialog", speaker:"星矢", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あ！さっきの！めっちゃテキパキしてた人！」' },
-    { type:"dialog", speaker:"和賀林 正恭", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あの、もしお時間あれば少しお話しませんか？」' },
+    { type:"dialog", speaker:"星矢", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"waist"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あ！さっきの！めっちゃテキパキしてた人！」' },
+    { type:"dialog", speaker:"和賀林 正恭", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"waist"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あの、もしお時間あれば少しお話しませんか？」' },
     { type:"dialog", speaker:"乃田 クリスタル", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"},{file:"crystal_normal_rafu.png",pos:"far-right",size:"waist"}], text:'「観察対象としても興味あります」' },
     { type:"dialog", speaker:"heroine", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"},{file:"crystal_normal_rafu.png",pos:"far-right",size:"waist"}], text:'（え、ちょっと待って…）' },
-    { type:"dialog", speaker:"narration", charas:[{file:"seiya_normal_rafu.png",pos:"far-left"},{file:"komiya_normal_rafu.png",pos:"left"},{file:"wakabayashi_normal_rafu.png",pos:"center"},{file:"aida_normal_rafu.png",pos:"right"},{file:"crystal_normal_rafu.png",pos:"far-right"}], text:'気づけば、個性の強すぎる五人に囲まれていた。' },
+    { type:"dialog", speaker:"narration", charas:[{file:"seiya_normal_rafu.png",pos:"p1",size:"full"},{file:"komiya_normal_rafu.png",pos:"p2",size:"full"},{file:"wakabayashi_normal_rafu.png",pos:"p3",size:"full"},{file:"aida_normal_rafu.png",pos:"p4",size:"full"},{file:"crystal_normal_rafu.png",pos:"p5",size:"full"}], text:'気づけば、個性の強すぎる五人に囲まれていた。' },
     { type:"dialog", speaker:"heroine",  text:'（これって…）' },
     { type:"dialog", speaker:"narration", charas:[], text:'――ここから、私の運命が変わっていく。' },
     { type:"chara_select" },
