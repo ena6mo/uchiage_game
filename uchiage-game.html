@@ -53,7 +53,7 @@ html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--tex
 #name-screen{background:radial-gradient(ellipse at 50% 55%,#1a1030 0%,#080608 65%);z-index:95}
 .name-wrap{text-align:center;z-index:1}
 .name-label{font-size:10px;letter-spacing:.5em;color:var(–text-dim);margin-bottom:40px}
-.name-field{font-family:‘Shippori Mincho’,serif;font-size:22px;letter-spacing:.25em;background:none;border:none;border-bottom:1px solid var(–accent);color:var(–text);text-align:center;width:260px;padding:10px 0;outline:none;caret-color:var(–accent)}
+.name-field{font-family:‘Shippori Mincho’,serif;font-size:22px;letter-spacing:.25em;background:none;border:none;border-bottom:1px solid var(–accent);color:var(–text);text-align:center;width:260px;padding:10px 0;outline:none;caret-color:var(–accent);-webkit-text-fill-color:var(–text)}
 .btn{font-family:‘Noto Serif JP’,serif;font-size:13px;letter-spacing:.4em;color:var(–accent2);background:none;border:1px solid rgba(232,200,138,.35);padding:15px 52px;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;margin-top:40px}
 .btn::before{content:’’;position:absolute;inset:0;background:var(–glow2);transform:scaleX(0);transform-origin:left;transition:transform .35s}
 .btn:hover::before{transform:scaleX(1)}
@@ -88,14 +88,14 @@ html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--tex
 .chara-slot.pos-far-right{right:0%;transform:translateX(10%);height:85%;z-index:1}
 .chara-slot.pos-single{left:50%;transform:translateX(-50%);height:92%;z-index:3}
 .chara-slot.size-full{height:92%}
-.chara-slot.size-waist{height:140%;bottom:-45%}
+.chara-slot.size-waist{height:160%;bottom:-58%}
 .chara-slot.size-knee{height:115%;bottom:-18%}
 .chara-placeholder{width:180px;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(196,154,216,.15);font-size:10px;letter-spacing:.2em}
 .ui-bar{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:linear-gradient(180deg,rgba(8,6,8,.75) 0%,transparent 100%)}
 .ui-left{display:flex;gap:8px}
 .ui-btn{font-size:10px;letter-spacing:.25em;color:var(–text-dim);background:rgba(8,6,8,.5);border:1px solid var(–border);padding:7px 14px;cursor:pointer;transition:all .2s;font-family:‘Noto Serif JP’,serif}
 .ui-btn:hover{color:var(–accent);border-color:var(–border-lit);background:rgba(28,18,40,.8)}
-.ui-btn.active{color:var(–text-dim);border-color:var(–border);background:rgba(8,6,8,.5);opacity:.5}
+.ui-btn.active{color:var(–accent);border-color:var(–accent);background:rgba(28,18,40,.8);box-shadow:0 0 12px rgba(196,154,216,.3)}
 #choices-overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px 24px;background:rgba(8,6,8,.65);backdrop-filter:blur(6px)}
 #choices-overlay.hidden{display:none}
 .choice-label{font-size:9px;letter-spacing:.6em;color:var(–text-dim);margin-bottom:6px}
@@ -433,26 +433,26 @@ const SCENARIO = {
     { type:"dialog", speaker:"narration", text:'流石の大企業で賞金は破格で、スポンサーもそこの企業以外にも面白そうだと乗ってくる所が増えた。参加条件はプロは素人を加えた新ユニットであれば既存のコンビでも参加OKだ。' },
     { type:"dialog", speaker:"narration", text:'テレビでも名の知れた芸人達が続々と参加表明をしている。コンビ芸人でもほとんどが個人参加で、各自面白素人を探すことが目下の課題だった。' },
     { type:"dialog", speaker:"narration", text:'勿論外から素人を引っ張り出してくるのも可能だが、自分から参加したい素人達とプロの芸人も参加するマッチングパーティが開かれた。' },
-    { type:"dialog", speaker:"星矢（せいや）", text:'「NSC時代に戻ったみたいオモロイやん！」', firstAppear:true },
+    { type:"dialog", speaker:"星矢（せいや）", charas:[{file:"seiya_normal_rafu.png",pos:"center",size:"full"}], text:'「NSC時代に戻ったみたいオモロイやん！」', firstAppear:true },
     { type:"dialog", speaker:"heroine",  text:'（あ、星矢さん）' },
     { type:"dialog", speaker:"narration", text:'明るくハッキリとした声量で一際目立っていた彼は上振り妙上（かみふりみょうじょう）というコンビで活躍している。彼の登場に周囲の人間はザワついていた。' },
     { type:"dialog", speaker:"narration", text:'彼の他にも見たことある芸人さん達が周囲に増えてきてより会場は騒がしくなった。\n私は、会場案内と飲み物を運んだり忙しくしていた。' },
-    { type:"dialog", speaker:"和賀林 正恭（わかばやし まさやす）", text:'「あの〜、お手洗いはどこですか？」', firstAppear:true },
+    { type:"dialog", speaker:"和賀林 正恭（わかばやし まさやす）", charas:[{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"}], text:'「あの〜、お手洗いはどこですか？」', firstAppear:true },
     { type:"dialog", speaker:"heroine",  text:'「え？あ、右の扉を出て、廊下の突き当たりを左です！」' },
     { type:"dialog", speaker:"和賀林 正恭", charas:[{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"}], text:'「ありがとうございます」' },
     { type:"dialog", speaker:"heroine", charas:[], text:'（びっくりした〜、今の人…魚鳥居（うおとりい）の和賀林さんだ…本当にすごい人たちばっかり…）' },
     { type:"dialog", speaker:"heroine",  text:'（今日は相方の春我（かすが）さん居ないのかな？うちの妹がファンなんだよね。）' },
-    { type:"dialog", speaker:"narration", text:'緊張している暇もなく、私は次のテーブルへとドリンクを運ぶ。' },
-    { type:"dialog", speaker:"？？？",       text:'「あ、すみません、それ僕のですよね？」' },
+    { type:"dialog", speaker:"narration", charas:[{file:"komiya_silhouette.png",pos:"center",size:"waist"}], text:'緊張している暇もなく、私は次のテーブルへとドリンクを運ぶ。' },
+    { type:"dialog", speaker:"？？？", charas:[{file:"komiya_silhouette.png",pos:"center",size:"waist"}], text:'「あ、すみません、それ僕のですよね？」' },
     { type:"dialog", speaker:"heroine",  text:'「え？あ、はい！アイスコーヒーでよろしかったですか？」' },
-    { type:"dialog", speaker:"狐宮 浩信（こみや ひろのぶ）", text:'「そうそう、それ。ありがとう」', firstAppear:true },
+    { type:"dialog", speaker:"狐宮 浩信（こみや ひろのぶ）", charas:[{file:"komiya_normal_rafu.png",pos:"center",size:"waist"}], text:'「そうそう、それ。ありがとう」', firstAppear:true },
     { type:"dialog", speaker:"narration", text:'受け取った彼は、少し猫背で頼りなさそうに見えるのに、妙に目だけが鋭い。' },
     { type:"dialog", speaker:"heroine",  text:'（この人…）' },
     { type:"dialog", speaker:"狐宮 浩信", text:'「いや〜こういうの苦手なんだよね、人多いしさ。なんかもう帰りたいんだけど」' },
-    { type:"dialog", speaker:"？？？",       text:'「お前それ毎回言ってるだろ」' },
+    { type:"dialog", speaker:"？？？", charas:[{file:"komiya_silhouette.png",pos:"left",size:"waist"},{file:"aida_silhouette.png",pos:"right",size:"waist"}], text:'「お前それ毎回言ってるだろ」' },
     { type:"dialog", speaker:"狐宮 浩信", text:'「だって事実じゃん！」' },
     { type:"dialog", speaker:"narration", text:'後ろから現れたのは、対照的に落ち着いた雰囲気の男性。' },
-    { type:"dialog", speaker:"逢田 周二（あいだ しゅうじ）", text:'「すみません、こいつ変なこと言ってませんでした？」', firstAppear:true },
+    { type:"dialog", speaker:"逢田 周二（あいだ しゅうじ）", charas:[{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「すみません、こいつ変なこと言ってませんでした？」', firstAppear:true },
     { type:"dialog", speaker:"heroine",  text:'「い、いえ…！」' },
     { type:"dialog", speaker:"狐宮 浩信", text:'「いや言ってたよ！帰りたいって！」' },
     { type:"dialog", speaker:"逢田 周二", text:'「それは聞いてないから」' },
@@ -468,22 +468,22 @@ const SCENARIO = {
     { type:"dialog", speaker:"heroine",  text:'（星矢さん、もう馴染んでる…）' },
     { type:"dialog", speaker:"narration", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"full"}], text:'その近くで、ひとり静かにスマホを見つめている男性がいた。' },
     { type:"dialog", speaker:"heroine", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"full"}], text:'「あの、お飲み物お持ちしました」' },
-    { type:"dialog", speaker:"乃田 クリスタル（のだ くりすたる）", text:'「あ、ありがとうございます」', firstAppear:true },
+    { type:"dialog", speaker:"乃田 クリスタル（のだ くりすたる）", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「あ、ありがとうございます」', firstAppear:true },
     { type:"dialog", speaker:"narration", text:'顔を上げた彼は、どこか無機質で、それでいて集中力の塊みたいな空気を纏っている。' },
-    { type:"dialog", speaker:"乃田 クリスタル", text:'「こういう場、ちょっとデータ取れるかなと思って来たんですけど」' },
-    { type:"dialog", speaker:"heroine",  text:'「データ…ですか？」' },
-    { type:"dialog", speaker:"乃田 クリスタル", text:'「はい。笑いの発生タイミングとか、会話のテンポとか。あと、相性の数値化できないかなって」' },
-    { type:"dialog", speaker:"heroine",  text:'（数値化…？）' },
-    { type:"dialog", speaker:"乃田 クリスタル", text:'「あ、でも普通に相方も探してます」' },
-    { type:"dialog", speaker:"heroine",  text:'「あ、はい…」' },
-    { type:"dialog", speaker:"narration", text:'感情のわからない一言を残し、彼はまたスマホに視線を戻した。' },
+    { type:"dialog", speaker:"乃田 クリスタル", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「こういう場、ちょっとデータ取れるかなと思って来たんですけど」' },
+    { type:"dialog", speaker:"heroine", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「データ…ですか？」' },
+    { type:"dialog", speaker:"乃田 クリスタル", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「はい。笑いの発生タイミングとか、会話のテンポとか。あと、相性の数値化できないかなって」' },
+    { type:"dialog", speaker:"heroine", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'（数値化…？）' },
+    { type:"dialog", speaker:"乃田 クリスタル", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「あ、でも普通に相方も探してます」' },
+    { type:"dialog", speaker:"heroine", charas:[{file:"crystal_normal_rafu.png",pos:"center",size:"waist"}], text:'「あ、はい…」' },
+    { type:"dialog", speaker:"narration", charas:[], text:'感情のわからない一言を残し、彼はまたスマホに視線を戻した。' },
     { type:"dialog", speaker:"narration", text:'会場の奥、少し落ち着いたスペースに目をやると、さっきの和賀林さんが誰かと話している。' },
     { type:"dialog", speaker:"和賀林 正恭", charas:[{file:"wakabayashi_normal_rafu.png",pos:"left",size:"knee"}], text:'「いや、その設定だと入りが難しくないですか？」' },
     { type:"dialog", speaker:"モブ1",       text:'「え、でもそこが逆に良くないですか？」' },
-    { type:"dialog", speaker:"星矢",     text:'「ほな俺も入れてくださいよその話！」' },
+    { type:"dialog", speaker:"星矢", charas:[{file:"wakabayashi_normal_rafu.png",pos:"left",size:"knee"},{file:"seiya_normal_rafu.png",pos:"right",size:"full"}], text:'「ほな俺も入れてくださいよその話！」' },
     { type:"dialog", speaker:"和賀林 正恭", text:'「ちょっと待ってください、今整理しますね」' },
-    { type:"dialog", speaker:"星矢",     text:'「整理せんといてくださいよ！勢いでいこうや！」' },
-    { type:"dialog", speaker:"モブ1",       text:'「いやでも確かに整理は大事ですよね！」' },
+    { type:"dialog", speaker:"星矢", charas:[{file:"wakabayashi_normal_rafu.png",pos:"left",size:"knee"},{file:"seiya_normal_rafu.png",pos:"right",size:"full"}], text:'「整理せんといてくださいよ！勢いでいこうや！」' },
+    { type:"dialog", speaker:"モブ1", charas:[], text:'「いやでも確かに整理は大事ですよね！」' },
     { type:"dialog", speaker:"narration", text:'三者三様のテンポで会話が転がっていく。' },
     { type:"dialog", speaker:"heroine",  text:'（すごい…全然タイプ違うのに、ちゃんと会話になってる）' },
     { type:"dialog", speaker:"narration", text:'その時、司会者の声が会場に響いた。' },
@@ -491,16 +491,15 @@ const SCENARIO = {
     { type:"dialog", speaker:"narration", text:'会場の空気が一気に変わる。\n探す側と、見られる側。その境界が曖昧になっていく。' },
     { type:"dialog", speaker:"heroine",  text:'（いよいよ、始まるんだ…）' },
     { type:"dialog", speaker:"narration", text:'その瞬間、不意に――' },
-    { type:"dialog", speaker:"狐宮 浩信", text:'「あれ、さっきの人じゃん」' },
-    { type:"dialog", speaker:"heroine",  text:'「え？」' },
-    { type:"dialog", speaker:"逢田 周二", text:'「スタッフさんですよね？」' },
-    { type:"dialog", speaker:"星矢",     text:'「あ！さっきの！めっちゃテキパキしてた人！」' },
-    { type:"dialog", speaker:"和賀林 正恭", text:'「あの、もしお時間あれば少しお話しませんか？」' },
-    { type:"dialog", speaker:"乃田 クリスタル", text:'「観察対象としても興味あります」' },
-    { type:"dialog", speaker:"heroine",  text:'（え、ちょっと待って…）' },
+    { type:"dialog", speaker:"狐宮 浩信", charas:[{file:"komiya_normal_rafu.png",pos:"center",size:"waist"}], text:'「あれ、さっきの人じゃん」' },
+    { type:"dialog", speaker:"heroine", charas:[{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「え？」' },
+    { type:"dialog", speaker:"逢田 周二", charas:[{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「スタッフさんですよね？」' },
+    { type:"dialog", speaker:"星矢", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あ！さっきの！めっちゃテキパキしてた人！」' },
+    { type:"dialog", speaker:"和賀林 正恭", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"}], text:'「あの、もしお時間あれば少しお話しませんか？」' },
+    { type:"dialog", speaker:"乃田 クリスタル", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"},{file:"crystal_normal_rafu.png",pos:"far-right",size:"waist"}], text:'「観察対象としても興味あります」' },
+    { type:"dialog", speaker:"heroine", charas:[{file:"seiya_normal_rafu.png",pos:"far-left",size:"full"},{file:"komiya_normal_rafu.png",pos:"left",size:"waist"},{file:"wakabayashi_normal_rafu.png",pos:"center",size:"waist"},{file:"aida_normal_rafu.png",pos:"right",size:"waist"},{file:"crystal_normal_rafu.png",pos:"far-right",size:"waist"}], text:'（え、ちょっと待って…）' },
     { type:"dialog", speaker:"narration", charas:[{file:"seiya_normal_rafu.png",pos:"far-left"},{file:"komiya_normal_rafu.png",pos:"left"},{file:"wakabayashi_normal_rafu.png",pos:"center"},{file:"aida_normal_rafu.png",pos:"right"},{file:"crystal_normal_rafu.png",pos:"far-right"}], text:'気づけば、個性の強すぎる五人に囲まれていた。' },
     { type:"dialog", speaker:"heroine",  text:'（これって…）' },
-    { type:"dialog", speaker:"narration", text:'――ここから、私の運命が変わっていく。' },
     { type:"dialog", speaker:"narration", charas:[], text:'――ここから、私の運命が変わっていく。' },
     { type:"chara_select" },
   ],
@@ -1285,6 +1284,27 @@ function startCharaRoute(chara) {
 }
 
 function backToTitle() {
+  // 立ち絵リセット
+  setCharaImgs([]);
+  // ゲーム状態リセット
+  currentChara = null;
+  currentRoute = "common";
+  currentIndex = 0;
+  isAuto = false;
+  isSkip = false;
+  clearTimeout(autoTimer);
+  clearInterval(typeTimer);
+  isTyping = false;
+  pageQueue = [];
+  shownFurigana = {};
+  // AUTOボタンリセット
+  var autoBtn = document.getElementById("auto-btn");
+  if (autoBtn) { autoBtn.classList.remove("active"); autoBtn.textContent = "AUTO"; }
+  var skipBtn = document.getElementById("skip-btn");
+  if (skipBtn) skipBtn.classList.remove("active");
+  // 好感度バー非表示
+  document.getElementById("affinity-bar").classList.remove("visible");
+  // 画面遷移
   document.getElementById("game-screen").classList.remove("visible");
   hideScreen("end-screen");
   hideScreen("chara-screen");
