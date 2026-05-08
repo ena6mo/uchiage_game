@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>打ち上げは賞レースの後で</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600;800&display=swap');
+:root {
+  --bg:#080608; --surface:#130f1a; --surface2:#1c1628;
+  --border:#2e2040; --border-lit:#5a3a78;
+  --accent:#c49ad8; --accent2:#e8c88a;
+  --text:#ede6f5; --text-dim:#7a6a8a; --text-mid:#b0a0c0;
+  --name-color:#ddb8f5;
+  --choice-bg:rgba(28,18,40,0.96); --choice-hover:rgba(196,154,216,0.12);
+  --glow2:rgba(232,200,138,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);height:100%;width:100%;overflow:hidden;touch-action:manipulation}
+
+/* ===== SCREENS ===== */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.6s ease}
+.screen.visible{display:flex}
+.screen.shown{opacity:1}
+
+/* ===== PARTICLES ===== */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;border-radius:50%;background:var(--accent);opacity:0;animation:drift linear infinite}
+@keyframes drift{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.35}90%{opacity:.1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+
+/* ===== TITLE ===== */
+#title-screen{background:radial-gradient(ellipse at 55% 35%,#241030 0%,#080608 65%);z-index:100}
+.title-wrap{text-align:center;z-index:1}
+.title-eyebrow{font-size:10px;letter-spacing:.6em;color:var(--text-dim);margin-bottom:28px;animation:fadeUp 1.4s ease both}
+.title-main{font-family:'Shippori Mincho',serif;font-size:clamp(22px,4.5vw,48px);font-weight:800;letter-spacing:.14em;color:var(--accent);text-shadow:0 0 60px rgba(196,154,216,.5);margin-bottom:6px;animation:fadeUp 1.4s .1s ease both}
+.title-rule{width:80px;height:1px;margin:24px auto;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:fadeUp 1.4s .2s ease both}
+.title-sub{font-size:10px;letter-spacing:.5em;color:var(--text-dim);margin-bottom:48px;animation:fadeUp 1.4s .25s ease both}
+.title-menu{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:32px;animation:fadeUp 1.4s .5s ease both}
+.tmb{font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:.4em;color:var(--accent2);background:none;border:1px solid rgba(232,200,138,.35);padding:14px 0;cursor:pointer;transition:all .3s;width:240px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+.tmb::before{content:'';position:absolute;inset:0;background:var(--glow2);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.tmb:hover::before{transform:scaleX(1)}
+.tmb:hover{border-color:var(--accent2);box-shadow:0 0 24px rgba(232,200,138,.12)}
+.tmb.sub{font-size:12px;color:var(--text-mid);border-color:rgba(176,160,192,.25);padding:12px 0}
+.tmb.sub:hover{border-color:var(--accent);color:var(--accent)}
+.tmb-icon{font-size:10px;opacity:.7}
+.title-progress{animation:fadeUp 1.4s .7s ease both}
+.prog-wrap{width:240px;height:2px;background:var(--border);margin:0 auto 10px;overflow:hidden}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1s ease;box-shadow:0 0 8px var(--accent)}
+.prog-text{font-size:10px;letter-spacing:.3em;color:var(--text-dim);text-align:center}
+
+/* ===== NAME INPUT ===== */
+#name-screen{background:radial-gradient(ellipse at 50% 55%,#1a1030 0%,#080608 65%);z-index:95}
+.name-wrap{text-align:center;z-index:1}
+.name-label{font-size:10px;letter-spacing:.5em;color:var(--text-dim);margin-bottom:40px}
+.name-field{font-family:'Shippori Mincho',serif;font-size:22px;letter-spacing:.25em;background:none;border:none;border-bottom:1px solid var(--accent);color:var(--text);text-align:center;width:260px;padding:10px 0;outline:none;caret-color:var(--accent)}
+.btn{font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:.4em;color:var(--accent2);background:none;border:1px solid rgba(232,200,138,.35);padding:15px 52px;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;margin-top:40px}
+.btn::before{content:'';position:absolute;inset:0;background:var(--glow2);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.btn:hover::before{transform:scaleX(1)}
+.btn:hover{border-color:var(--accent2);box-shadow:0 0 32px rgba(232,200,138,.15)}
+
+/* ===== CHARA SELECT ===== */
+#chara-screen{background:radial-gradient(ellipse at 45% 55%,#18102a 0%,#080608 65%);z-index:90}
+.chara-label{font-size:10px;letter-spacing:.5em;color:var(--text-dim);margin-bottom:48px;z-index:1}
+.chara-grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:680px;padding:0 20px;z-index:1}
+.chara-card{width:116px;border:1px solid var(--border);padding:24px 12px 20px;cursor:pointer;text-align:center;transition:all .3s cubic-bezier(.34,1.56,.64,1);background:var(--surface);position:relative;overflow:hidden}
+.chara-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .3s}
+.chara-card:hover::after,.chara-card:active::after{transform:scaleX(1)}
+.chara-card:hover,.chara-card:active{border-color:var(--border-lit);transform:translateY(-6px);box-shadow:0 16px 48px rgba(196,154,216,.15);background:var(--surface2)}
+.chara-icon{width:60px;height:60px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-lit);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.chara-name{font-size:12px;color:var(--name-color);line-height:1.7}
+.chara-kana{font-size:9px;color:var(--text-dim);margin-top:5px;letter-spacing:.1em}
+
+/* ===== GAME ===== */
+#game-screen{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg);z-index:80}
+#game-screen.visible{display:flex}
+.scene-bg{flex:1;position:relative;overflow:hidden;background:linear-gradient(170deg,#1a1030 0%,#0a0814 100%);display:flex;align-items:center;justify-content:center}
+.bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .8s ease;opacity:0}
+.bg-img.loaded{opacity:1}
+.bg-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,6,8,.5) 0%,transparent 60%)}
+.chara-stand{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:88%;display:flex;align-items:flex-end;justify-content:center;transition:opacity .4s}
+.chara-stand img{height:100%;width:auto;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 40px rgba(196,154,216,.12))}
+.chara-placeholder{width:180px;height:100%;border:1px dashed rgba(196,154,216,.1);display:flex;align-items:center;justify-content:center;color:rgba(196,154,216,.15);font-size:10px;letter-spacing:.2em}
+.ui-bar{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:linear-gradient(180deg,rgba(8,6,8,.75) 0%,transparent 100%)}
+.ui-left{display:flex;gap:8px}
+.ui-btn{font-size:10px;letter-spacing:.25em;color:var(--text-dim);background:rgba(8,6,8,.5);border:1px solid var(--border);padding:7px 14px;cursor:pointer;transition:all .2s;font-family:'Noto Serif JP',serif}
+.ui-btn:hover,.ui-btn.active{color:var(--accent);border-color:var(--border-lit);background:rgba(28,18,40,.8)}
+#choices-overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px 24px;background:rgba(8,6,8,.65);backdrop-filter:blur(6px)}
+#choices-overlay.hidden{display:none}
+.choice-label{font-size:9px;letter-spacing:.6em;color:var(--text-dim);margin-bottom:6px}
+.choice-btn{width:100%;max-width:500px;background:var(--choice-bg);border:1px solid var(--border);color:var(--text-mid);font-family:'Noto Serif JP',serif;font-size:14px;line-height:1.7;padding:18px 28px;cursor:pointer;text-align:left;transition:all .25s;letter-spacing:.04em;position:relative;overflow:hidden}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .25s}
+.choice-btn:hover::before,.choice-btn:active::before{transform:scaleY(1)}
+.choice-btn:hover,.choice-btn:active{background:var(--choice-hover);border-color:var(--border-lit);color:var(--text);padding-left:36px}
+
+/* ===== TEXTBOX ===== */
+.textbox{position:relative;background:rgba(8,6,8,.94);border-top:1px solid var(--border);height:200px;flex-shrink:0;cursor:pointer;user-select:none;-webkit-user-select:none;overflow:hidden}
+.textbox:active{background:rgba(20,12,30,.96)}
+.textbox-inner{padding:22px 28px 52px;height:100%;overflow:hidden}
+.speaker-plate{display:inline-flex;align-items:center;margin-bottom:14px}
+.speaker-bg{background:var(--surface2);border:1px solid var(--border-lit);border-right:none;padding:5px 16px 5px 14px;font-family:'Shippori Mincho',serif;font-size:13px;letter-spacing:.1em;color:var(--name-color);white-space:nowrap}
+.speaker-tail{width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:10px solid var(--border-lit);position:relative}
+.speaker-tail::after{content:'';position:absolute;left:-11px;top:-13px;width:0;height:0;border-top:13px solid transparent;border-bottom:13px solid transparent;border-left:9px solid var(--surface2)}
+.dialog-text{font-size:15px;line-height:2.1;color:var(--text);min-height:64px;white-space:pre-wrap}
+.dialog-text.narration{color:var(--text-mid);font-size:14px;line-height:2.2;letter-spacing:.04em}
+.typing-cursor::after{content:'|';color:var(--accent);opacity:.8;animation:blink .7s infinite}
+.next-ind{position:absolute;bottom:16px;right:22px;display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:9px;letter-spacing:.35em;pointer-events:none;transition:opacity .3s}
+.next-arrow{width:7px;height:7px;border-right:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:rotate(45deg);animation:bounce 1.4s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(3px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ===== MENU ===== */
+#menu-overlay{position:fixed;inset:0;z-index:200;background:rgba(8,6,8,.92);backdrop-filter:blur(12px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#menu-overlay.visible{display:flex}
+.menu-title{font-size:10px;letter-spacing:.5em;color:var(--text-dim);margin-bottom:20px}
+.menu-btn{font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:.3em;color:var(--text-mid);background:none;border:1px solid var(--border);padding:13px 0;cursor:pointer;transition:all .25s;width:240px;text-align:center}
+.menu-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ===== END ===== */
+#end-screen{z-index:110;background:#080608}
+.end-wrap{text-align:center;z-index:1}
+.end-orn{width:40px;height:1px;background:var(--accent);margin:0 auto 24px;box-shadow:0 0 12px var(--accent)}
+.end-type{font-size:10px;letter-spacing:.7em;color:var(--text-dim);margin-bottom:20px}
+.end-title{font-family:'Shippori Mincho',serif;font-size:clamp(20px,3.5vw,34px);color:var(--accent);letter-spacing:.18em;margin-bottom:56px;text-shadow:0 0 40px rgba(196,154,216,.35)}
+
+/* ===== COLLECTION ===== */
+.coll-wrap{width:100%;max-width:760px;height:100vh;display:flex;flex-direction:column;z-index:1;overflow:hidden;box-sizing:border-box}
+.coll-header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.coll-back{font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:.3em;color:var(--text-dim);background:none;border:none;cursor:pointer;transition:color .2s}
+.coll-back:hover{color:var(--accent)}
+.coll-title{font-family:'Shippori Mincho',serif;font-size:12px;letter-spacing:.5em;color:var(--text-mid)}
+.coll-count{font-size:11px;letter-spacing:.25em;color:var(--accent)}
+
+/* ===== ENDING LIST ===== */
+#ending-screen{background:radial-gradient(ellipse at 50% 40%,#1a1030 0%,#080608 60%);z-index:105;align-items:center}
+.ending-grid{flex:1;overflow-y:auto;padding:24px 28px 40px;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.end-chara-cell{padding:12px 6px;text-align:center;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+.end-chara-cell:nth-child(5n){border-right:none}
+.end-chara-emoji{font-size:18px;display:block;margin-bottom:4px}
+.end-chara-name{font-size:9px;color:var(--text-dim);letter-spacing:.05em;line-height:1.4}
+.end-card{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:14px 8px;text-align:center;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.end-card:nth-child(5n){border-right:none}
+.end-card.locked{background:repeating-linear-gradient(45deg,rgba(255,255,255,.01) 0,rgba(255,255,255,.01) 2px,transparent 2px,transparent 8px)}
+.badge{font-size:8px;letter-spacing:.3em;padding:3px 8px}
+.badge.happy{color:var(--accent2);border:1px solid rgba(232,200,138,.4)}
+.badge.normal{color:var(--accent);border:1px solid rgba(196,154,216,.4)}
+.badge.bad{color:#c07080;border:1px solid rgba(192,112,128,.4)}
+.end-card-title{font-size:11px;color:var(--text);letter-spacing:.05em;line-height:1.5}
+.end-lock{font-size:20px;opacity:.15}
+
+/* ===== STILL GALLERY ===== */
+#still-screen{background:radial-gradient(ellipse at 50% 40%,#1a1030 0%,#080608 60%);z-index:105;align-items:center}
+.still-grid{flex:1;overflow-y:auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:0;width:100%;box-sizing:border-box}
+.still-card{aspect-ratio:3/4;border:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;transition:all .3s;background:var(--surface);display:flex;flex-direction:column}
+.still-card:hover{border-color:var(--accent);transform:scale(1.02)}
+.still-card.locked{cursor:default}
+.still-card.locked:hover{border-color:var(--border);transform:none}
+.still-img-wrap{flex:1;overflow:hidden;min-height:0}
+.still-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.still-lock-box{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.01) 0,rgba(255,255,255,.01) 2px,transparent 2px,transparent 8px)}
+.still-lock-icon{font-size:22px;opacity:.15}
+.still-lock-name{font-size:9px;color:var(--text-dim);letter-spacing:.1em}
+.still-label{flex-shrink:0;padding:7px 8px;background:var(--surface2);border-top:1px solid var(--border);font-size:9px;color:var(--text-mid);letter-spacing:.1em;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.still-chara-cards{display:grid;grid-template-columns:repeat(3,1fr);column-gap:10px;row-gap:20px;width:100%;margin-top:8px}
+.still-section{padding:16px 0 14px;display:flex;align-items:center;gap:10px;width:100%;min-width:0;border-top:1px solid var(--border-lit)}
+.still-section-line{flex:1;height:1px;background:var(--border)}
+.still-section-name{font-size:11px;letter-spacing:.35em;color:var(--name-color);white-space:nowrap;font-family:'Shippori Mincho',serif}
+.still-spacer{height:60px;width:100%;display:block}
+
+/* ===== 好感度バー ===== */
+#affinity-bar {
+  position:absolute; top:0; left:0; right:0; z-index:11;
+  display:none; align-items:center; justify-content:center;
+  padding:10px 20px; gap:10px;
+  background:linear-gradient(180deg,rgba(8,6,8,.8) 0%,transparent 100%);
+  pointer-events:none;
+}
+#affinity-bar.visible { display:flex; }
+.aff-label { font-size:9px; letter-spacing:.3em; color:var(--text-dim); white-space:nowrap; }
+.aff-track { flex:1; max-width:160px; height:3px; background:var(--border); position:relative; }
+.aff-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .6s ease; box-shadow:0 0 6px var(--accent); }
+.aff-val { font-size:9px; letter-spacing:.2em; color:var(--accent); min-width:32px; text-align:right; }
+.aff-heart { font-size:11px; animation:heartbeat .8s ease-in-out; }
+@keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+/* ===== シーンタイトル ===== */
+#scene-title-overlay {
+  position:absolute; inset:0; z-index:15;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(8,6,8,.7); backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .5s;
+}
+#scene-title-overlay.visible { opacity:1; pointer-events:auto; }
+.scene-title-line { width:40px; height:1px; background:var(--accent); margin:0 auto 16px; }
+.scene-title-text { font-family:'Shippori Mincho',serif; font-size:clamp(14px,3vw,20px); letter-spacing:.3em; color:var(--accent); text-align:center; }
+.scene-title-tap { margin-top:20px; font-size:9px; letter-spacing:.4em; color:var(--text-dim); animation:blink 1.4s infinite; }
+#still-viewer{position:fixed;inset:0;z-index:300;background:rgba(8,6,8,.96);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
+#still-viewer.hidden{display:none}
+#still-viewer img{max-width:90vw;max-height:75vh;object-fit:contain;border:1px solid var(--border)}
+.viewer-caption{margin-top:16px;font-size:12px;letter-spacing:.3em;color:var(--text-mid)}
+.viewer-close{margin-top:12px;font-size:9px;letter-spacing:.4em;color:var(--text-dim)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<!-- タイトル -->
+<div id="title-screen" class="screen visible shown">
+  <div class="title-wrap">
+    <div class="title-eyebrow">VISUAL NOVEL</div>
+    <div class="title-main">打ち上げは賞レースの後で</div>
+    <div class="title-rule"></div>
+    <div class="title-sub">A STORY OF AWARDS AND FEELINGS</div>
+    <div class="title-menu">
+      <button class="tmb" onclick="goToName()"><span class="tmb-icon">▷</span>は じ め る</button>
+      <button class="tmb sub" onclick="openEnding()"><span class="tmb-icon">◈</span>エンディング</button>
+      <button class="tmb sub" onclick="openStill()"><span class="tmb-icon">◇</span>ス チ ル</button>
+      <button class="tmb sub" onclick="openSaveMenu('load')"><span class="tmb-icon">↺</span>つづきから</button>
+    </div>
+    <div class="title-progress">
+      <div class="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-text" id="prog-text">0 / 15 END　│　0 STILL</div>
+    </div>
+  </div>
+</div>
+
+<!-- 名前入力 -->
+<div id="name-screen" class="screen">
+  <div class="name-wrap">
+    <div class="name-label">主人公の名前を入力してください</div>
+    <input class="name-field" id="name-field" type="text" value="松樹　真琴" maxlength="12">
+    <br>
+    <button class="btn" onclick="confirmName()">決　定</button>
+  </div>
+</div>
+
+<!-- キャラ選択（分岐後用） -->
+<div id="chara-screen" class="screen">
+  <div class="chara-label">― 攻略キャラクターを選んでください ―</div>
+  <div class="chara-grid" id="chara-grid"></div>
+</div>
+
+<!-- ゲーム -->
+<div id="game-screen">
+  <div class="scene-bg">
+    <div class="bg-img" id="bg-img"></div>
+    <div class="bg-overlay"></div>
+    <div class="chara-stand" id="chara-stand">
+      <div class="chara-placeholder">立ち絵エリア</div>
+    </div>
+    <div class="ui-bar">
+      <div class="ui-left">
+        <button class="ui-btn" onclick="openMenu()">MENU</button>
+        <button class="ui-btn" id="auto-btn" onclick="toggleAuto()">AUTO</button>
+        <button class="ui-btn" id="skip-btn" onclick="toggleSkip()">SKIP</button>
+      </div>
+      <div style="font-size:9px;letter-spacing:.3em;color:var(--text-dim)" id="chara-label"></div>
+    </div>
+    <!-- 好感度バー -->
+    <div id="affinity-bar">
+      <div class="aff-label" id="aff-chara-name"></div>
+      <div class="aff-track"><div class="aff-fill" id="aff-fill"></div></div>
+      <div class="aff-val" id="aff-val">0 / 12</div>
+      <div class="aff-heart" id="aff-heart" style="opacity:0">💜</div>
+    </div>
+    <!-- シーンタイトル -->
+    <div id="scene-title-overlay" onclick="closeSceneTitle()">
+      <div class="scene-title-line"></div>
+      <div class="scene-title-text" id="scene-title-text"></div>
+      <div class="scene-title-line"></div>
+      <div class="scene-title-tap">TAP TO CONTINUE</div>
+    </div>
+    <div id="choices-overlay" class="hidden">
+      <div class="choice-label">― 選択してください ―</div>
+    </div>
+  </div>
+  <div class="textbox" id="textbox" onclick="nextScene()">
+    <div class="textbox-inner">
+      <div class="speaker-plate" id="speaker-plate">
+        <div class="speaker-bg" id="speaker-name"></div>
+        <div class="speaker-tail" id="speaker-tail"></div>
+      </div>
+      <div class="dialog-text" id="dialog-text"></div>
+    </div>
+    <div class="next-ind" id="next-ind" style="opacity:0">
+      <span>TAP</span><div class="next-arrow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- メニュー -->
+<div id="menu-overlay">
+  <div class="menu-title">― MENU ―</div>
+  <button class="menu-btn" onclick="closeMenu()">ゲームに戻る</button>
+  <button class="menu-btn" onclick="openSaveMenu('save')">セーブ</button>
+  <button class="menu-btn" onclick="openSaveMenu('load')">ロード</button>
+  <button class="menu-btn" onclick="closeMenu();backToTitle()">タイトルへ戻る</button>
+</div>
+
+<!-- セーブ・ロードメニュー -->
+<div id="save-menu" style="position:fixed;inset:0;z-index:250;background:rgba(8,6,8,.95);backdrop-filter:blur(12px);align-items:center;justify-content:center;gap:14px;display:none;flex-direction:column;">
+  <div id="save-menu-title" style="font-size:12px;letter-spacing:.6em;color:var(--text-dim);margin-bottom:8px;">S A V E</div>
+  <div id="save-slots" style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:0 24px;"></div>
+  <button class="menu-btn" style="margin-top:12px;" onclick="closeSaveMenu()">キャンセル</button>
+</div>
+
+<!-- トースト通知 -->
+<div id="save-toast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(28,18,40,.95);border:1px solid var(--border-lit);color:var(--accent);font-size:11px;letter-spacing:.25em;padding:10px 28px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;"></div>
+
+<!-- エンド -->
+<div id="end-screen" class="screen">
+  <div class="end-wrap">
+    <div class="end-orn"></div>
+    <div class="end-type" id="end-type">HAPPY END</div>
+    <div class="end-title" id="end-title"></div>
+    <div class="end-orn"></div>
+    <br><br>
+    <button class="btn" onclick="backToTitle()">タイトルへ戻る</button>
+  </div>
+</div>
+
+<!-- エンディングリスト -->
+<div id="ending-screen" class="screen">
+  <div class="coll-wrap">
+    <div class="coll-header">
+      <button class="coll-back" onclick="closeEnding()">◀ もどる</button>
+      <div class="coll-title">E N D I N G　L I S T</div>
+      <div class="coll-count" id="end-count">0 / 15</div>
+    </div>
+    <div class="ending-grid" id="ending-grid"></div>
+  </div>
+</div>
+
+<!-- スチル -->
+<div id="still-screen" class="screen">
+  <div class="coll-wrap">
+    <div class="coll-header">
+      <button class="coll-back" onclick="closeStill()">◀ もどる</button>
+      <div class="coll-title">S T I L L　G A L L E R Y</div>
+      <div class="coll-count" id="still-count">0 / 15</div>
+    </div>
+    <div class="still-grid" id="still-grid"></div>
+  </div>
+</div>
+
+<!-- スチル拡大 -->
+<div id="still-viewer" class="hidden" onclick="closeViewer()">
+  <img id="viewer-img" src="" alt="">
+  <div class="viewer-caption" id="viewer-caption"></div>
+  <div class="viewer-close">✕ TAP TO CLOSE</div>
+</div>
+
+<script>
+// ============================================================
+// データ定義
+// ============================================================
+const CHARACTERS = [
+  { id:"komiya",      name:"狐宮 浩信",      kana:"こみや ひろのぶ",     emoji:"🦊" },
+  { id:"aida",        name:"逢田 周二",       kana:"あいだ しゅうじ",     emoji:"🧒🏼" },
+  { id:"wakabayashi", name:"和賀林 正恭",     kana:"わかばやし まさやす", emoji:"🥮" },
+  { id:"seiya",       name:"星矢",            kana:"せいや",              emoji:"⭐" },
+  { id:"crystal",     name:"乃田 クリスタル", kana:"のだ クリスタル",     emoji:"💎" },
+];
+
+// サブキャラ定義
+var SUB_CHARACTERS = [
+  { id:"muragami", name:"村紙", fullname:"村紙", realname:"鱸崇裕", kana:"むらかみ", file:"muragami_normal_rafu.png" },
+];
+
+const END_TYPES = [
+  { key:"happy",  label:"HAPPY END",  cls:"happy"  },
+  { key:"normal", label:"NORMAL END", cls:"normal" },
+  { key:"bad",    label:"BAD END",    cls:"bad"    },
+];
+
+const END_TITLES = {
+  komiya:      { happy:"（未定）", normal:"（未定）", bad:"（未定）" },
+  aida:        { happy:"（未定）", normal:"（未定）", bad:"（未定）" },
+  wakabayashi: { happy:"（未定）", normal:"（未定）", bad:"（未定）" },
+  seiya:       { happy:"（未定）", normal:"（未定）", bad:"（未定）" },
+  crystal:     { happy:"（未定）", normal:"（未定）", bad:"（未定）" },
+};
+
+const STILLS = [
+  { id:"komiya_1",      charaId:"komiya",      file:"", caption:"狐宮　スチル①" },
+  { id:"komiya_2",      charaId:"komiya",      file:"", caption:"狐宮　スチル②" },
+  { id:"komiya_3",      charaId:"komiya",      file:"", caption:"狐宮　スチル③" },
+  { id:"aida_1",        charaId:"aida",        file:"", caption:"逢田　スチル①" },
+  { id:"aida_2",        charaId:"aida",        file:"", caption:"逢田　スチル②" },
+  { id:"aida_3",        charaId:"aida",        file:"", caption:"逢田　スチル③" },
+  { id:"wakabayashi_1", charaId:"wakabayashi", file:"", caption:"和賀林　スチル①" },
+  { id:"wakabayashi_2", charaId:"wakabayashi", file:"", caption:"和賀林　スチル②" },
+  { id:"wakabayashi_3", charaId:"wakabayashi", file:"", caption:"和賀林　スチル③" },
+  { id:"seiya_1",       charaId:"seiya",       file:"", caption:"星矢　スチル①" },
+  { id:"seiya_2",       charaId:"seiya",       file:"", caption:"星矢　スチル②" },
+  { id:"seiya_3",       charaId:"seiya",       file:"", caption:"星矢　スチル③" },
+  { id:"crystal_1",     charaId:"crystal",     file:"", caption:"クリスタル　スチル①" },
+  { id:"crystal_2",     charaId:"crystal",     file:"", caption:"クリスタル　スチル②" },
+  { id:"crystal_3",     charaId:"crystal",     file:"", caption:"クリスタル　スチル③" },
+];
+
+
+// SCENARIOはここに差し込む
+const SCENARIO = {
+  common: [
+    { type:"dialog", speaker:"narration", text:'私はイベント会社の広報担当をしている。' },
+    { type:"dialog", speaker:"narration", text:'得意先の企業からのプレゼントで新ユニット賞レースを開くことになった。プロアマ問わず。' },
+    { type:"dialog", speaker:"narration", text:'流石の大企業で賞金は破格で、スポンサーもそこの企業以外にも面白そうだと乗ってくる所が増えた。参加条件はプロは素人を加えた新ユニットであれば既存のコンビでも参加OKだ。' },
+    { type:"dialog", speaker:"narration", text:'テレビでも名の知れた芸人達が続々と参加表明をしている。コンビ芸人でもほとんどが個人参加で、各自面白素人を探すことが目下の課題だった。' },
+    { type:"dialog", speaker:"narration", text:'勿論外から素人を引っ張り出してくるのも可能だが、自分から参加したい素人達とプロの芸人も参加するマッチングパーティが開かれた。' },
+    { type:"dialog", speaker:"星矢（せいや）", text:'「NSC時代に戻ったみたいオモロイやん！」', firstAppear:true },
+    { type:"dialog", speaker:"heroine",  text:'（あ、星矢さん）' },
+    { type:"dialog", speaker:"narration", text:'明るくハッキリとした声量で一際目立っていた彼は上振り妙上（かみふりみょうじょう）というコンビで活躍している。彼の登場に周囲の人間はザワついていた。' },
+    { type:"dialog", speaker:"narration", text:'彼の他にも見たことある芸人さん達が周囲に増えてきてより会場は騒がしくなった。\n私は、会場案内と飲み物を運んだり忙しくしていた。' },
+    { type:"dialog", speaker:"和賀林 正恭（わかばやし まさやす）", text:'「あの〜、お手洗いはどこですか？」', firstAppear:true },
+    { type:"dialog", speaker:"heroine",  text:'「え？あ、右の扉を出て、廊下の突き当たりを左です！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ありがとうございます」' },
+    { type:"dialog", speaker:"heroine",  text:'（びっくりした〜、今の人…魚鳥居（うおとりい）の和賀林さんだ…本当にすごい人たちばっかり…）' },
+    { type:"dialog", speaker:"heroine",  text:'（今日は相方の春我 俊彰（かすが としあき）さん居ないのかな？うちの妹がファンなんだよね。）' },
+    { type:"dialog", speaker:"narration", text:'緊張している暇もなく、私は次のテーブルへとドリンクを運ぶ。' },
+    { type:"dialog", speaker:"？？？",       text:'「あ、すみません、それ僕のですよね？」' },
+    { type:"dialog", speaker:"heroine",  text:'「え？あ、はい！アイスコーヒーでよろしかったですか？」' },
+    { type:"dialog", speaker:"狐宮 浩信（こみや ひろのぶ）", text:'「そうそう、それ。ありがとう」', firstAppear:true },
+    { type:"dialog", speaker:"narration", text:'受け取った彼は、少し猫背で頼りなさそうに見えるのに、妙に目だけが鋭い。' },
+    { type:"dialog", speaker:"heroine",  text:'（この人…）' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「いや〜こういうの苦手なんだよね、人多いしさ。なんかもう帰りたいんだけど」' },
+    { type:"dialog", speaker:"？？？",       text:'「お前それ毎回言ってるだろ」' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「だって事実じゃん！」' },
+    { type:"dialog", speaker:"narration", text:'後ろから現れたのは、対照的に落ち着いた雰囲気の男性。' },
+    { type:"dialog", speaker:"逢田 周二（あいだ しゅうじ）", text:'「すみません、こいつ変なこと言ってませんでした？」', firstAppear:true },
+    { type:"dialog", speaker:"heroine",  text:'「い、いえ…！」' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「いや言ってたよ！帰りたいって！」' },
+    { type:"dialog", speaker:"逢田 周二", text:'「それは聞いてないから」' },
+    { type:"dialog", speaker:"heroine",  text:'（あ、この二人が…）' },
+    { type:"dialog", speaker:"narration", text:'四四郎（よんしろう）の狐宮さんと逢田さん。テレビで見るまんまのテンポに、思わず少し笑いそうになる。' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「で、どうすんの？もう相方決めた？」' },
+    { type:"dialog", speaker:"逢田 周二", text:'「いや、だからそれを探しに来てるんでしょ」' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「え〜でもさ、なんかこう…ピンと来る人いなくない？」' },
+    { type:"dialog", speaker:"逢田 周二", text:'「お前が選ぶ側なのやめろ」' },
+    { type:"dialog", speaker:"heroine",  text:'（やっぱりこの距離感…すごいなぁ）' },
+    { type:"dialog", speaker:"narration", text:'別のテーブルから、ひときわ大きな笑い声が上がる。' },
+    { type:"dialog", speaker:"星矢",     text:'「いやそれ絶対ウケるやつやん！やろうやそれ！」' },
+    { type:"dialog", speaker:"heroine",  text:'（星矢さん、もう馴染んでる…）' },
+    { type:"dialog", speaker:"narration", text:'その近くで、ひとり静かにスマホを見つめている男性がいた。' },
+    { type:"dialog", speaker:"heroine",  text:'「あの、お飲み物お持ちしました」' },
+    { type:"dialog", speaker:"乃田 クリスタル（のだ くりすたる）", text:'「あ、ありがとうございます」', firstAppear:true },
+    { type:"dialog", speaker:"narration", text:'顔を上げた彼は、どこか無機質で、それでいて集中力の塊みたいな空気を纏っている。' },
+    { type:"dialog", speaker:"乃田 クリスタル", text:'「こういう場、ちょっとデータ取れるかなと思って来たんですけど」' },
+    { type:"dialog", speaker:"heroine",  text:'「データ…ですか？」' },
+    { type:"dialog", speaker:"乃田 クリスタル", text:'「はい。笑いの発生タイミングとか、会話のテンポとか。あと、相性の数値化できないかなって」' },
+    { type:"dialog", speaker:"heroine",  text:'（数値化…？）' },
+    { type:"dialog", speaker:"乃田 クリスタル", text:'「あ、でも普通に相方も探してます」' },
+    { type:"dialog", speaker:"heroine",  text:'「あ、はい…」' },
+    { type:"dialog", speaker:"narration", text:'感情のわからない一言を残し、彼はまたスマホに視線を戻した。' },
+    { type:"dialog", speaker:"narration", text:'会場の奥、少し落ち着いたスペースに目をやると、さっきの和賀林さんが誰かと話している。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「いや、その設定だと入りが難しくないですか？」' },
+    { type:"dialog", speaker:"モブ1",       text:'「え、でもそこが逆に良くないですか？」' },
+    { type:"dialog", speaker:"星矢",     text:'「ほな俺も入れてくださいよその話！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ちょっと待ってください、今整理しますね」' },
+    { type:"dialog", speaker:"星矢",     text:'「整理せんといてくださいよ！勢いでいこうや！」' },
+    { type:"dialog", speaker:"モブ1",       text:'「いやでも確かに整理は大事ですよね！」' },
+    { type:"dialog", speaker:"narration", text:'三者三様のテンポで会話が転がっていく。' },
+    { type:"dialog", speaker:"heroine",  text:'（すごい…全然タイプ違うのに、ちゃんと会話になってる）' },
+    { type:"dialog", speaker:"narration", text:'その時、司会者の声が会場に響いた。' },
+    { type:"dialog", speaker:"アナウンス", text:'「それではこれより、フリー交流のお時間に入ります！気になる方にぜひ積極的にお声がけください！」' },
+    { type:"dialog", speaker:"narration", text:'会場の空気が一気に変わる。\n探す側と、見られる側。その境界が曖昧になっていく。' },
+    { type:"dialog", speaker:"heroine",  text:'（いよいよ、始まるんだ…）' },
+    { type:"dialog", speaker:"narration", text:'その瞬間、不意に――' },
+    { type:"dialog", speaker:"狐宮 浩信", text:'「あれ、さっきの人じゃん」' },
+    { type:"dialog", speaker:"heroine",  text:'「え？」' },
+    { type:"dialog", speaker:"逢田 周二", text:'「スタッフさんですよね？」' },
+    { type:"dialog", speaker:"星矢",     text:'「あ！さっきの！めっちゃテキパキしてた人！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あの、もしお時間あれば少しお話しませんか？」' },
+    { type:"dialog", speaker:"乃田 クリスタル", text:'「観察対象としても興味あります」' },
+    { type:"dialog", speaker:"heroine",  text:'（え、ちょっと待って…）' },
+    { type:"dialog", speaker:"narration", text:'気づけば、個性の強すぎる五人に囲まれていた。' },
+    { type:"dialog", speaker:"heroine",  text:'（これって…）' },
+    { type:"dialog", speaker:"narration", text:'――ここから、私の運命が変わっていく。' },
+    { type:"chara_select" },
+  ],
+  wakabayashi_route: [
+    { type:"dialog", speaker:"narration", text:'気づけば、私は五人に囲まれていた。' },
+    { type:"dialog", speaker:"heroine", text:'（どうしよう…誰と話せば…）' },
+    { type:"dialog", speaker:"和賀林 正恭", chara:"wakabayashi_normal_rafu.png", text:'「あの、無理にとは言わないんですけど」' },
+    { type:"dialog", speaker:"narration", text:'一歩引いた位置から、静かに声をかけてきたのは和賀林さんだった。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「さっき案内してもらった時、すごく分かりやすくて」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「説明の順番とか、言葉の選び方とか。ああいうの、結構大事だなって思うんですよね」' },
+    { type:"dialog", speaker:"heroine", text:'（そんなところ見てたんだ…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もしよかったら、少しだけ話しませんか？」' },
+    { type:"dialog", speaker:"narration", text:'押し付ける感じはないのに、なぜか断りづらい距離感。' },
+    { type:"dialog", speaker:"heroine", text:'「はい、ぜひ…！」' },
+    { type:"dialog", speaker:"narration", text:'少し人の少ないスペースへ移動する。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「スタッフさんなんですよね？」' },
+    { type:"dialog", speaker:"heroine", text:'「はい。今回は運営側で…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「じゃあ、全体見えてる立場ですよね」' },
+    { type:"dialog", speaker:"heroine", text:'「えっと…そう、ですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「だったらちょうどいいな」' },
+    { type:"dialog", speaker:"narration", text:'和賀林さんは少しだけ声を落とした。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「この企画、どう思います？」' },
+    { type:"dialog", speaker:"heroine", text:'（どう答えるのが正解なんだろう…）' },
+    { type:"choice", choices:[
+      { label:"ちゃんと成立させたい企画だと思ってます", next:"waka_q1_a", affinity:2 },
+      { label:"面白い企画だとは思います", next:"waka_q1_b", affinity:1 },
+      { label:"正直、話題性重視なところはあるかもしれません", next:"waka_q1_c", affinity:0 },
+    ]},
+  ],
+
+  waka_q1_a: [
+    { type:"dialog", speaker:"heroine", text:'「ちゃんと成立させたい企画だと思ってます」' },
+    { type:"dialog", speaker:"heroine", text:'「ただ盛り上がればいい、じゃなくて」' },
+    { type:"dialog", speaker:"heroine", text:'「組んだ人同士が、ちゃんと意味のある形になるように…って」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「いいですね」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ちゃんと『中身』見てる人だ」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それなら話が早いです」' },
+    { type:"jump", next:"waka_merge1" },
+  ],
+
+  waka_q1_b: [
+    { type:"dialog", speaker:"heroine", text:'「面白い企画だとは思います」' },
+    { type:"dialog", speaker:"heroine", text:'「普段組まない人同士が組むって、新鮮ですし」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「そうですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「企画としては、かなり強いと思います」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ただ、それだけだと危ないんですけどね」' },
+    { type:"dialog", speaker:"heroine", text:'「危ない…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「はい。その先がないと」' },
+    { type:"jump", next:"waka_merge1" },
+  ],
+
+  waka_q1_c: [
+    { type:"dialog", speaker:"heroine", text:'「正直、話題性重視なところはあるかもしれません」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……まあ、それはそうですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「この規模でやる以上、注目は必要ですし」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ただ、それだけで終わるなら」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あんまり参加する意味ないかなって思ってます」' },
+    { type:"jump", next:"waka_merge1" },
+  ],
+
+  waka_merge1: [
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……」' },
+    { type:"dialog", speaker:"narration", text:'少しだけ考えるように視線を落とす。私がその沈黙に耐えきれなくなったとき、それに気付いた彼は言う。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません、ちょっと考え事しちゃいまして」' },
+    { type:"dialog", speaker:"heroine", text:'「いえ…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ただ、運営側ってどういう想定なのかなって気になって」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「成功例を作るつもりなのか、話題性を取るのか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それによって、こっちの動き方も変わるので」' },
+    { type:"dialog", speaker:"heroine", text:'（この人、本気で考えてる…）' },
+    { type:"dialog", speaker:"heroine", text:'「でも…楽しそうだなって思ってる人も多いですよね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それはそうですね」' },
+    { type:"dialog", speaker:"heroine", text:'「星矢さんとか、すごくワクワクしてる感じで」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ああいうタイプは強いですよね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あれだけ前向きだと、多少のズレも｢面白さ｣に変えられるから」' },
+    { type:"dialog", speaker:"narration", text:'少しだけ柔らかく笑う。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「俺はどっちかっていうと、そっちじゃないんで」' },
+    { type:"dialog", speaker:"heroine", text:'「そうなんですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「考えちゃうんですよ、先に」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「失敗したときの形とか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「関係が壊れるパターンとか」' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「だから――」' },
+    { type:"dialog", speaker:"narration", text:'少しの間を取って彼ははっきりと言った。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「できれば、『ちゃんと成立させたい』んですよね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ただの企画で終わらせずに」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「少なくとも、関わるなら」' },
+    { type:"dialog", speaker:"heroine", text:'（軽い気持ちで参加したわけじゃないんだ）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「そのために、少し協力してもらえませんか？」' },
+    { type:"dialog", speaker:"heroine", text:'「協力…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「運営側の視点、教えてほしいんです」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あと、あなた自身がどう思ってるのかも」' },
+    { type:"dialog", speaker:"heroine", text:'（まっすぐな視線）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「無理なら大丈夫です」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ただ――」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あなた、ちゃんと考えてる人だと思ったので」' },
+    { type:"dialog", speaker:"heroine", text:'（……そんな風に言われたの、初めてかも）' },
+    { type:"dialog", speaker:"heroine", text:'「……私でよければ」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ありがとうございます」' },
+    { type:"dialog", speaker:"narration", text:'彼は目を細めて静かに頷く。\n私たちの即席コンビが誕生した瞬間だった。' },
+    { type:"dialog", speaker:"narration", text:'実際の大会まで続くかも分からないけど、素人さん同士で組むよりは余っ程心持ちが楽だった。\nでも――' },
+    { type:"dialog", speaker:"narration", text:'和賀林さんと関わることで、\n『ただの運営』ではいられなくなる予感だけは、確かにあった。' },
+    { type:"dialog", speaker:"narration", text:'マッチングイベントは、思っていたよりあっさりと終わった。' },
+    { type:"dialog", speaker:"アナウンス", text:'「連絡先は各自交換してください」' },
+    { type:"dialog", speaker:"アナウンス", text:'「後は自由に組んでいただいて構いません」' },
+    { type:"dialog", speaker:"narration", text:'そんなアナウンスと共に、会場は自然と解散の流れになる。' },
+    { type:"dialog", speaker:"heroine", text:'（え、こんな感じで終わるんだ…）' },
+    { type:"dialog", speaker:"narration", text:'運営側として本来の仕事である後片付けをして今日の仕事は完了だ。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません、少しだけいいですか」' },
+    { type:"dialog", speaker:"narration", text:'会場を出ようとしたところで、呼び止められる。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「さっきの話なんですけど」' },
+    { type:"dialog", speaker:"heroine", text:'（和賀林さんまだいらっしゃったんだ…他の芸人さんや、一般の方もほとんどがもう帰られたのに…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もしよかったら、もう少し具体的に相談させてもらえませんか」' },
+    { type:"dialog", speaker:"heroine", text:'「え、あ、はい！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もちろん、業務に支障が出ない範囲で大丈夫です」' },
+    { type:"dialog", speaker:"heroine", text:'（なんでこんなに丁寧なんだろう…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あと、連絡先…交換してもいいですか」' },
+    { type:"dialog", speaker:"narration", text:'それが、始まりだった。' },
+    { type:"scene_title", text:'数日後' },
+    { type:"dialog", speaker:"narration", text:'仕事終わり、指定された場所へ向かう。小さな稽古場。誰も居ない。\nこういった場所は来る機会がなくて、居心地が悪い。' },
+    { type:"dialog", speaker:"heroine", text:'（どこに居ればいいんだろう？）' },
+    { type:"dialog", speaker:"narration", text:'大きな鏡が自分を映している。\nぼーっと見ていると、いろんなことが頭に浮かんでは消えていく。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません、遅くなりました」' },
+    { type:"dialog", speaker:"heroine", text:'「あ、いえ…！」' },
+    { type:"dialog", speaker:"narration", text:'スーツ姿のまま、少し息を切らしている。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「別件の収録が押してしまって」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「時間、大丈夫でした？」' },
+    { type:"dialog", speaker:"heroine", text:'「はい、問題ないです」' },
+    { type:"dialog", speaker:"heroine", text:'（忙しそう…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今日は軽く話すだけにしましょうか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ネタの方向性とか、どういう人と組むかとか」' },
+    { type:"dialog", speaker:"heroine", text:'「はい」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「実際、何人か話してみて」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あ、これは無理だなっていうのはありました」' },
+    { type:"dialog", speaker:"heroine", text:'「そんなにすぐ分かるんですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「なんとなくですけどね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「会話のテンポとか、間のズレ方で」' },
+    { type:"dialog", speaker:"narration", text:'その後も、会話はほとんど分析だった。\nどんな人が合うか。どういうネタが成立するか。' },
+    { type:"dialog", speaker:"heroine", text:'（すごい…ちゃんと『組む前提』で考えてる）' },
+    { type:"scene_title", text:'別日　ネタ合わせ①' },
+    { type:"dialog", speaker:"narration", text:'数日後、再び稽古場へ。' },
+    { type:"dialog", speaker:"heroine", text:'（今日はネタやるって言ってたけど…）' },
+    { type:"dialog", speaker:"narration", text:'（時間が過ぎる）' },
+    { type:"dialog", speaker:"heroine", text:'（あれ…）' },
+    { type:"dialog", speaker:"narration", text:'【スマホ通知】' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『すみません、今日どうしても外せない仕事が入ってしまって』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『リスケでも大丈夫ですか？どっかで穴埋めします』' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"narration", text:'仕方ない、とは思う。' },
+    { type:"dialog", speaker:"heroine", text:'（プロだもんね…）' },
+    { type:"scene_title", text:'別日　ネタ合わせ②' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません、今日も少しだけ遅れます」' },
+    { type:"dialog", speaker:"heroine", text:'「大丈夫です」' },
+    { type:"dialog", speaker:"heroine", text:'（……まただ）' },
+    { type:"dialog", speaker:"narration", text:'待っている時間が、少しずつ増えていく。' },
+    { type:"scene_title", text:'初ネタ合わせ' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「じゃあ、今出た案、即興ですけど仮で一回やってみましょうか」' },
+    { type:"dialog", speaker:"heroine", text:'「は、はい！」' },
+    { type:"dialog", speaker:"heroine", text:'「えっと、その…！役場って融通が効かにゃい───」' },
+    { type:"dialog", speaker:"heroine", text:'「あ、ごめんなさい！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「いえ、大丈夫です」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今のところなんですけど」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「言葉の選び方がちょっと硬いですね」' },
+    { type:"dialog", speaker:"heroine", text:'「あ…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あと、間が一定すぎるというか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もう少し『崩して』もいいかもしれないです」' },
+    { type:"dialog", speaker:"heroine", text:'「……はい」' },
+    { type:"dialog", speaker:"narration", text:'言い方は優しいのに、内容は的確すぎる。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません、細かくて」' },
+    { type:"dialog", speaker:"heroine", text:'「いえ…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「せっかくやるなら、ちゃんと形にしたいので」' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"scene_title", text:'主人公の葛藤' },
+    { type:"dialog", speaker:"narration", text:'夕暮れ時の帰り道、いつもより足は重かった。' },
+    { type:"dialog", speaker:"heroine", text:'（合わせられないよ…）' },
+    { type:"dialog", speaker:"heroine", text:'（あんなにちゃんと考えてて、忙しくて、それでも妥協しなくて）' },
+    { type:"dialog", speaker:"heroine", text:'（私、完全に足引っ張ってる…）' },
+    { type:"dialog", speaker:"heroine", text:'（そもそも私、運営だし）' },
+    { type:"dialog", speaker:"heroine", text:'（どうしてこんな事になったんだろ…）' },
+    { type:"dialog", speaker:"narration", text:'カバンの中でなったスマホを取り出し、画面を確認すると和賀林さんからの通知がきていた。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『今日はありがとうございました』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『改善点、いくつか送ってもいいですか？』' },
+    { type:"dialog", speaker:"heroine", text:'（……すごいな、この人）' },
+    { type:"dialog", speaker:"heroine", text:'（ちゃんと『次』のこと考えてる）' },
+    { type:"dialog", speaker:"heroine", text:'（今のままじゃ、ダメだ）' },
+    { type:"dialog", speaker:"heroine", text:'（逃げたくない）' },
+    { type:"dialog", speaker:"heroine", text:'『お願いします』' },
+    { type:"dialog", speaker:"narration", text:'この時はまだ――\n『追いつこうとしているだけ』だった。\n\nでもそれが、\n少しずつ関係を変えていくことになる。' },
+    { type:"scene_title", text:'ネタ帳を持ってくる和賀林' },
+    { type:"dialog", speaker:"narration", text:'その日は珍しく、和賀林さんの方が先に来ていた。' },
+    { type:"dialog", speaker:"heroine", text:'「あ、お疲れさまです」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あ、よかった」' },
+    { type:"dialog", speaker:"narration", text:'どこか少しだけ、いつもより表情が明るい。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今日、ちょっと見てほしいものがあって」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ネタ、いくつか考えてきました」' },
+    { type:"dialog", speaker:"heroine", text:'「えっ…」' },
+    { type:"dialog", speaker:"narration", text:'開くと、びっしりと書き込まれたネタの構成。\n設定、導入、ボケの展開、ツッコミの位置まで細かく整理されている。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あの、前やったときに」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「松樹さんの言い回し、ちょっと独特だなって思って」' },
+    { type:"dialog", speaker:"heroine", text:'「え…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「だからそれ活かせる形、いくつか試してみたんです」' },
+    { type:"dialog", speaker:"narration", text:'淡々としているのに、どこか熱がこもっている。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「これとか、たぶん合うと思います」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あとこっちは、少し崩したパターンで――」' },
+    { type:"dialog", speaker:"narration", text:'ページをめくる手が少し早い。' },
+    { type:"dialog", speaker:"heroine", text:'（……この人）' },
+    { type:"dialog", speaker:"heroine", text:'（こんなに考えてきてくれたんだ）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あ、すみません、押し付けるつもりじゃなくて」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「合わなかったら全然変えてもらって大丈夫です」' },
+    { type:"dialog", speaker:"heroine", text:'「いえ…！」' },
+    { type:"dialog", speaker:"heroine", text:'「すごい面白いです、これ…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……そうですか？」' },
+    { type:"dialog", speaker:"heroine", text:'「はい。ちゃんと『私』で考えてくれてるっていうか…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……よかった」' },
+    { type:"dialog", speaker:"narration", text:'ほんの一瞬だけ、力が抜けたように笑う。' },
+    { type:"dialog", speaker:"heroine", text:'（和賀林さん嬉しそう…）' },
+    { type:"dialog", speaker:"narration", text:'この人こんな顔、するんだ。' },
+    { type:"scene_title", text:'春我のアドバイス' },
+    { type:"dialog", speaker:"narration", text:'ネタ合わせが終わると、一人使っていた部屋に残っていた。' },
+    { type:"dialog", speaker:"heroine", text:'（ダメだな…）' },
+    { type:"dialog", speaker:"heroine", text:'（せっかくあんなに考えてきてくれてるのに）' },
+    { type:"dialog", speaker:"heroine", text:'（全然応えられてない）' },
+    { type:"dialog", speaker:"？？？", text:'「あれ、まだいたの？」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"narration", text:'振り返ると、真っ黒でラフな格好の男性が立っていた。' },
+    { type:"dialog", speaker:"春我 俊彰（かすが としあき）", chara:"", text:'「あ、ごめんね、驚かせた？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林の相方です！」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「トゥルース！」' },
+    { type:"dialog", speaker:"narration", text:'人差し指を差し出して、まるで内緒話をするかの様な抑えたトーンで言ってから、彼は自分で軽く笑う。' },
+    { type:"dialog", speaker:"heroine", text:'「あ…！」' },
+    { type:"dialog", speaker:"heroine", text:'（この人が…！いつもの髪型してないから気付かなかった）' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「私ね、外で待ってたんだけど」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「全然出てこないもんだから気になって」' },
+    { type:"dialog", speaker:"heroine", text:'「すみません、私が遅くて…」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「いやいや、それは違うね」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林さんが長いだけ」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「で、悩んでるでしょ」' },
+    { type:"dialog", speaker:"heroine", text:'「えっ」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「顔に出てるよ」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「"どう合わせたらいいか分かんない"って顔してますなぁ〜」' },
+    { type:"dialog", speaker:"narration", text:'言い当てられて胸が小さく鳴った。' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「まぁ、分かるよ」' },
+    { type:"dialog", speaker:"narration", text:'春我さんはキャラを入れた喋り方から少し素に近付いたように口調を変えた。' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林さん、ああいう人だから」' },
+    { type:"dialog", speaker:"heroine", text:'「ああいう…？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「ちゃんとやろうとするし」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「ちゃんとさせようともするし」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「しかも本人はそれが普通だと思ってる」' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「悪い人じゃないんだけどね…───むしろ逆で」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「ちゃんとしたいからこそ、そうなってる」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「でもさ、それに全部合わせてたら」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「しんどくなるよ」' },
+    { type:"dialog", speaker:"heroine", text:'「……はい」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「だから、無理に合わせなくていい」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林さんに合わせるんじゃなくて、」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林さんを振り回すくらいでちょうどいいのよ」' },
+    { type:"dialog", speaker:"heroine", text:'「振り回す…？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「理屈で積み上げてくる人だから」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「そこ崩せる人の方が、たぶん相性いい」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「和賀林さん、そういうの好きだし」' },
+    { type:"dialog", speaker:"heroine", text:'「え…？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「面白いって思ってるよ、たぶん」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「君──…そうそう、松樹くんのこと」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「ま、頑張ってちょうだいよ！」' },
+    { type:"dialog", speaker:"narration", text:'そう言って軽く手を振った彼は、部屋の隅に置いてあったグレゴリーのリュックを背負ってあっさり去っていく。' },
+    { type:"dialog", speaker:"heroine", text:'（……ここ魚鳥居さんの楽屋だったんだ。\n悪い事しちゃった。あ、でも春我さんちょっと不用心だなぁ…）' },
+    { type:"dialog", speaker:"heroine", text:'（合わせなくていい…か）' },
+    { type:"dialog", speaker:"narration", text:'今まで考えたこともなかった。' },
+    { type:"dialog", speaker:"heroine", text:'（私が和賀林さんを『ズラす側』……）' },
+    { type:"dialog", speaker:"narration", text:'それができたら楽になるのかな？' },
+    { type:"scene_title", text:'指導の熱　→　距離が生まれる' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「じゃあ、さっきのネタもう一回やってみましょうか」' },
+    { type:"dialog", speaker:"heroine", text:'「はい」' },
+    { type:"dialog", speaker:"heroine", text:'「だから、それって――」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あ、今ちょっと止めていいですか」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「そこ、」"だから"じゃなくて」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「一回間を空けてから入った方がいいです」' },
+    { type:"dialog", speaker:"heroine", text:'「間、ですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「はい。今だと説明に聞こえちゃうので」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「一回、感情を置いてから言葉にした方が――」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あとその前のくだりなんですけど」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今の流れだとボケが弱く見えるので」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「前フリもう少しズラした方がいいですね」' },
+    { type:"dialog", speaker:"heroine", text:'「ズラす…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「例えば――」' },
+    { type:"dialog", speaker:"narration", text:'そのまま立って実演し始める。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ここで一回」"違う方向"に持っていって」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「そこから戻すと、ツッコミが効くので」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今のだと一直線すぎて――」' },
+    { type:"dialog", speaker:"narration", text:'言葉がどんどん具体的になっていく。\n修正点、意図、改善案。\n全部正しくて、全部理解できる。\nでも――' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「で、ここなんですけど」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「その言い方だとちょっと――」' },
+    { type:"dialog", speaker:"narration", text:'ふと、止まる。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……あ」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません」' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ちょっと、言いすぎました」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「詰め込みすぎましたね」' },
+    { type:"dialog", speaker:"heroine", text:'「いえ、そんな…」' },
+    { type:"dialog", speaker:"narration", text:'一瞬、空気が止まる。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今日は、この辺にしておきましょうか」' },
+    { type:"dialog", speaker:"heroine", text:'「え…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「消化しきれないと思うので」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「一回整理してからの方がいいです」' },
+    { type:"dialog", speaker:"heroine", text:'「はい…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「付き合わせてしまって」' },
+    { type:"dialog", speaker:"narration", text:'さっきまでの熱が、すっと引いていく。' },
+    { type:"dialog", speaker:"heroine", text:'（距離、戻った…）' },
+    { type:"dialog", speaker:"narration", text:'ちゃんと向き合ってくれていたはずなのに、\n急に「プロと素人」に引き戻されたみたいだった。' },
+    { type:"scene_title", text:'賞レースに出た理由' },
+    { type:"dialog", speaker:"narration", text:'その日は珍しく、雑談から始まった。' },
+    { type:"dialog", speaker:"heroine", text:'「あの…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「はい？」' },
+    { type:"dialog", speaker:"heroine", text:'「なんで、この賞レース出ようと思ったんですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……どうしてですか？」' },
+    { type:"dialog", speaker:"heroine", text:'「なんとなく、気になって」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……そうですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「最初は、単純に興味でした」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「普段組まない人とやるの、どうなるのかなって」' },
+    { type:"dialog", speaker:"heroine", text:'「やっぱり、そうなんですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「はい」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あと――」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「自分のやり方が、どこまで通用するのか挑戦したくて」' },
+    { type:"dialog", speaker:"heroine", text:'「やり方…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今まで、同じ相方とやってきて」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ある程度、形はできてるんですけど」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それが『相性』なのか、『再現性があるもの』なのか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「正直、分からなくなる時があって」' },
+    { type:"dialog", speaker:"heroine", text:'「……」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もし別の人とやっても成立するなら」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それはちゃんとした『技術』だと思うし」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「逆に崩れるなら」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「何に頼ってたのか、分かるので」' },
+    { type:"dialog", speaker:"heroine", text:'（この人…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あと」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……確認したかったんだと思います」' },
+    { type:"dialog", speaker:"heroine", text:'「確認…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今のやり方で、この先もやっていけるのか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「それとも、変えないといけないのか」' },
+    { type:"dialog", speaker:"narration", text:'静かな声だった。\nでも、その奥にあるものは軽くなかった。' },
+    { type:"dialog", speaker:"heroine", text:'「……怖くないんですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「怖いですよ」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「でも、分からないまま続ける方が」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「たぶん、もっと怖いので」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「だから、こういう機会はありがたいです」' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"narration", text:'この人は、\nただ新しいことをやりたいんじゃない。\n『壊れるかもしれない前提』で、踏み込んでる。' },
+    { type:"dialog", speaker:"heroine", text:'（……だから、あんなに真剣なんだ）' },
+    { type:"scene_title", text:'魚鳥居の漫才を観る' },
+    { type:"dialog", speaker:"narration", text:'仕事の都合で、収録現場に立ち会うことになった。' },
+    { type:"dialog", speaker:"heroine", text:'（今日、魚鳥居さん出るんだよね…）' },
+    { type:"dialog", speaker:"narration", text:'客席のざわめき、照明、独特の緊張感。' },
+    { type:"dialog", speaker:"heroine", text:'（こういう現場、やっぱり空気違うな…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ど〜も〜魚鳥居です」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「トルゥース！！！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「――で、結局それって何なんですか？」' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「いやだから、それはさ！」' },
+    { type:"dialog", speaker:"narration", text:'速い。\nでも、置いていかれない。' },
+    { type:"dialog", speaker:"春我 俊彰", text:'「ヘッ！」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「気持ちわりぃな本当に」' },
+    { type:"dialog", speaker:"narration", text:'流れが綺麗に積み上がっていく。\n一つ一つの言葉に無駄がなくて、\nでも全部が「自然」に見える。' },
+    { type:"dialog", speaker:"heroine", text:'（すごい…）' },
+    { type:"dialog", speaker:"narration", text:'『作ってる』はずなのに、\n『会話してるだけ』に見える。' },
+    { type:"dialog", speaker:"narration", text:'気づいたら、手を叩いていた。' },
+    { type:"dialog", speaker:"heroine", text:'（……すごい）' },
+    { type:"dialog", speaker:"heroine", text:'（こんなに面白いんだ…）' },
+    { type:"scene_title", text:'帰り道' },
+    { type:"dialog", speaker:"narration", text:'収録が終わり、外に出る。\n夜の空気が少し冷たい。' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"narration", text:'さっきまでの笑いが、少しずつ遠ざかっていく。' },
+    { type:"dialog", speaker:"heroine", text:'（私…）' },
+    { type:"dialog", speaker:"heroine", text:'（あの人と、ネタやってたんだ）' },
+    { type:"dialog", speaker:"heroine", text:'（あんな人と…）' },
+    { type:"dialog", speaker:"heroine", text:'（無理だよ…）' },
+    { type:"dialog", speaker:"heroine", text:'（全然レベル違うじゃん）' },
+    { type:"dialog", speaker:"narration", text:'思い出す。\nネタ帳。指導。言葉の一つ一つ。' },
+    { type:"dialog", speaker:"heroine", text:'（ちゃんとやりたいって言ってた意味、これだ…）' },
+    { type:"dialog", speaker:"heroine", text:'（私、場違いなんじゃ…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『今日、収録来てましたよね』' },
+    { type:"dialog", speaker:"heroine", text:'（え…なんで）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『スタッフ席の後ろの方にいたの、見えました』' },
+    { type:"dialog", speaker:"heroine", text:'（見られてた…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『すみません、終わった後声かけようと思ったんですけど』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『バタバタしてて難しくて』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『どうでした？』' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"narration", text:'『どうでした？』なんて、\nそんな簡単な言葉で聞かれても。' },
+    { type:"dialog", speaker:"heroine", text:'（すごかった、なんて）' },
+    { type:"dialog", speaker:"heroine", text:'（言うまでもないのに）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『正直な感想で大丈夫です』' },
+    { type:"dialog", speaker:"heroine", text:'（……ずるい）' },
+    { type:"dialog", speaker:"heroine", text:'『すごかったです』' },
+    { type:"dialog", speaker:"heroine", text:'『正直、圧倒されました』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『ありがとうございます』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『でも、あれはあれなので』' },
+    { type:"dialog", speaker:"heroine", text:'「え？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『あなたとやってるものとは、別物です』' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『比較する必要はないです』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『むしろ、しない方がいいと思います』' },
+    { type:"dialog", speaker:"heroine", text:'（……なんで）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『アイツとの形を目指すと、たぶん崩れるので』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『今やってる方向、間違ってないです』' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『次、少し変えたネタ試したいんですけど』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『時間、取れそうですか？』' },
+    { type:"dialog", speaker:"narration", text:'さっきまで感じていた重さが、\n少しだけ、形を変える。' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"heroine", text:'（逃げる理由、なくなったな）' },
+    { type:"dialog", speaker:"heroine", text:'『大丈夫です』' },
+    { type:"dialog", speaker:"heroine", text:'『大丈夫です』' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'『ありがとうございます』' },
+    { type:"dialog", speaker:"narration", text:'その一言だけで、\nまた前に進まされる。' },
+    { type:"dialog", speaker:"narration", text:'距離があるのに、ちゃんと『繋いでくる』。' },
+    { type:"scene_title", text:'ズラし成功　距離が変わる' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「じゃあ、その新しいパターンやってみましょうか」' },
+    { type:"dialog", speaker:"heroine", text:'「はい」' },
+    { type:"dialog", speaker:"heroine", text:'「……それ、逆じゃないですか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「え？」' },
+    { type:"dialog", speaker:"heroine", text:'「いや、普通そっち行きます？」' },
+    { type:"dialog", speaker:"narration", text:'数秒の沈黙。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……」' },
+    { type:"dialog", speaker:"narration", text:'ふっと笑う。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今の、いいですね」' },
+    { type:"dialog", speaker:"heroine", text:'「えっ」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「想定してなかったですけど」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「そのズレ、使えます」' },
+    { type:"dialog", speaker:"heroine", text:'「ほんとですか…？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「はい」' },
+    { type:"dialog", speaker:"narration", text:'少しだけ近づく。' },
+    { type:"dialog", speaker:"heroine", text:'（近い…）' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もう一回やってもらっていいですか」' },
+    { type:"dialog", speaker:"narration", text:'距離が、近い。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今の言い方で」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もう少しだけ間を詰めて――」' },
+    { type:"dialog", speaker:"narration", text:'無意識に肩に軽く触れて位置調整する。' },
+    { type:"dialog", speaker:"heroine", text:'「っ…！」' },
+    { type:"dialog", speaker:"narration", text:'間。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……あ」' },
+    { type:"dialog", speaker:"narration", text:'すぐ手を離す。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません」' },
+    { type:"dialog", speaker:"heroine", text:'「い、いえ…」' },
+    { type:"dialog", speaker:"narration", text:'ほんの一瞬だったのに、\n妙に意識してしまう。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「今の、すごく良かったです」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ちゃんと『崩れてる』のに成立してる」' },
+    { type:"dialog", speaker:"heroine", text:'（……）' },
+    { type:"dialog", speaker:"narration", text:'嬉しい、はずなのに\nそれだけじゃない。' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「もう少し詰めれば、かなり形になると思います」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「どうします？今日もう少しやりますか」' },
+    { type:"choice", choices:[
+      { label:"もう少しやりたいです", next:"waka_q2_a", affinity:1 },
+      { label:"少し休憩しませんか？", next:"waka_q2_b", affinity:1 },
+      { label:"今日はこのまま帰ります", next:"waka_q2_c", affinity:0 },
+    ]},
+  ],
+
+  waka_q2_a: [
+    { type:"dialog", speaker:"heroine", text:'「もう少しやりたいです」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……いいですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「その方が精度上がると思います」' },
+    { type:"dialog", speaker:"narration", text:'距離は近づかない。\nでも――\n『必要とされてる感覚』が強くなる。' },
+    { type:"jump", next:"waka_end_preview" },
+  ],
+
+  waka_q2_b: [
+    { type:"dialog", speaker:"heroine", text:'「少し休憩しませんか？」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……そうですね」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「少し詰めすぎました」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「さっきのズラし、よかったです」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「ああいうの、もっと欲しいですね」' },
+    { type:"dialog", speaker:"heroine", text:'「頑張ります」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……無理はしなくていいです」' },
+    { type:"dialog", speaker:"narration", text:'仕事の話なのに、\n少しだけ空気が違う。' },
+    { type:"jump", next:"waka_end_preview" },
+  ],
+
+  waka_q2_c: [
+    { type:"dialog", speaker:"heroine", text:'「今日はこのまま帰ります」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「……そうですか」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「あの…無理させてませんか？」' },
+    { type:"dialog", speaker:"heroine", text:'「え？…」' },
+    { type:"dialog", speaker:"和賀林 正恭", text:'「すみません。負担になってたら辞めますんで。ネタ合わせ中は楽しそうにしている様に見えて、松樹さんいつも帰りは浮かないですよね」' },
+    { type:"dialog", speaker:"heroine", text:'「そんな、事…」' },
+    { type:"dialog", speaker:"narration", text:'一歩引かれる。\nさっきまでの距離が、\nなかったことみたいに戻る。' },
+    { type:"jump", next:"waka_end_preview" },
+  ],
+
+  waka_end_preview: [
+    { type:"dialog", speaker:"narration", text:'【ここからシナリオ続きます。後日追加予定】' },
+    { type:"end", endType:"HAPPY END", endTitle:"正恭と掴んだ舞台" },
+  ],
+};
+// ============================================================
+// セーブデータ
+// ============================================================
+var saveData = { ends:{}, stills:{}, clearedCommon:false };
+var affinity = {};
+var MAX_AFFINITY = 12;
+var shownFurigana = {};
+
+// フリガナ初回のみ表示
+function getDisplayName(rawName) {
+  var m = rawName.match(/^(.+?)（(.+?)）$/);
+  if (!m) return rawName;
+  var base = m[1];
+  if (shownFurigana[base]) return base;
+  shownFurigana[base] = true;
+  return rawName;
+}
+
+// ============================================================
+// セーブ・ロード（localStorage 5スロット）
+// ============================================================
+var SAVE_KEY = 'uchiage_save_';
+
+function buildSaveState() {
+  return {
+    heroName: heroName,
+    currentCharaId: currentChara ? currentChara.id : null,
+    currentRoute: currentRoute,
+    currentIndex: currentIndex,
+    affinity: affinity,
+    clearedCommon: saveData.clearedCommon,
+    ends: saveData.ends,
+    stills: saveData.stills,
+    shownFurigana: shownFurigana,
+    timestamp: new Date().toLocaleString('ja-JP'),
+    routeLabel: currentChara ? currentChara.name + 'ルート' : '共通ルート',
+  };
+}
+
+function saveGame(slot) {
+  try {
+    localStorage.setItem(SAVE_KEY + slot, JSON.stringify(buildSaveState()));
+    refreshSaveSlots();
+    showSaveToast('セーブしました　SLOT ' + slot);
+  } catch(e) { showSaveToast('セーブに失敗しました'); }
+}
+
+function loadGame(slot) {
+  try {
+    var raw = localStorage.getItem(SAVE_KEY + slot);
+    if (!raw) { showSaveToast('データがありません'); return; }
+    var s = JSON.parse(raw);
+    heroName = s.heroName || '松樹　真琴';
+    currentRoute = s.currentRoute || 'common';
+    currentIndex = s.currentIndex || 0;
+    affinity = s.affinity || {};
+    shownFurigana = s.shownFurigana || {};
+    saveData.clearedCommon = s.clearedCommon || false;
+    saveData.ends = s.ends || {};
+    saveData.stills = s.stills || {};
+    currentChara = s.currentCharaId ? CHARACTERS.find(function(c){ return c.id === s.currentCharaId; }) : null;
+    closeSaveMenu();
+    closeMenu();
+    ['title-screen','name-screen','chara-screen','end-screen'].forEach(function(id){
+      var el = document.getElementById(id);
+      el.classList.remove('shown','visible');
+    });
+    document.getElementById('game-screen').classList.add('visible');
+    document.getElementById('chara-label').textContent = currentChara ? currentChara.name : '';
+    if (currentChara) updateAffinityBar(currentChara.id);
+    updateProgress();
+    renderScene();
+    showSaveToast('ロードしました　SLOT ' + slot);
+  } catch(e) { showSaveToast('ロードに失敗しました'); }
+}
+
+function deleteSave(slot) {
+  localStorage.removeItem(SAVE_KEY + slot);
+  refreshSaveSlots();
+  showSaveToast('削除しました　SLOT ' + slot);
+}
+
+function getSaveInfo(slot) {
+  try {
+    var raw = localStorage.getItem(SAVE_KEY + slot);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function showSaveToast(msg) {
+  var t = document.getElementById('save-toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(function(){ t.classList.remove('visible'); }, 2200);
+}
+
+function openSaveMenu(mode) {
+  document.getElementById('menu-overlay').classList.remove('visible');
+  var el = document.getElementById('save-menu');
+  el.dataset.mode = mode;
+  document.getElementById('save-menu-title').textContent = mode === 'save' ? 'S A V E' : 'L O A D';
+  refreshSaveSlots();
+  el.style.display = 'flex';
+}
+function closeSaveMenu() {
+  document.getElementById('save-menu').style.display = 'none';
+}
+
+function refreshSaveSlots() {
+  var mode = document.getElementById('save-menu').dataset.mode || 'save';
+  var container = document.getElementById('save-slots');
+  container.innerHTML = '';
+  for (var i = 1; i <= 5; i++) {
+    var info = getSaveInfo(i);
+    var slot = document.createElement('div');
+    slot.className = 'save-slot' + (info ? ' filled' : '');
+    if (info) {
+      slot.innerHTML = '<div class="save-slot-num">SLOT ' + i + '</div><div class="save-slot-route">' + info.routeLabel + '</div><div class="save-slot-time">' + info.timestamp + '</div>';
+      var del = document.createElement('button');
+      del.className = 'save-del-btn';
+      del.textContent = '✕';
+      (function(n){ del.onclick = function(e){ e.stopPropagation(); deleteSave(n); }; })(i);
+      slot.appendChild(del);
+    } else {
+      slot.innerHTML = '<div class="save-slot-num">SLOT ' + i + '</div><div class="save-slot-empty">― 空きスロット ―</div>';
+    }
+    (function(n, hasData){
+      slot.onclick = function(){
+        if (mode === 'save') saveGame(n);
+        else if (hasData) loadGame(n);
+        else showSaveToast('データがありません');
+      };
+    })(i, !!info);
+    container.appendChild(slot);
+  }
+}
+
+function getAffinity(charaId) {
+  return affinity[charaId] || 0;
+}
+function addAffinity(charaId, val) {
+  if (!charaId) return;
+  affinity[charaId] = Math.min(MAX_AFFINITY, Math.max(0, (affinity[charaId] || 0) + val));
+  updateAffinityBar(charaId);
+}
+function updateAffinityBar(charaId) {
+  var chara = CHARACTERS.find(function(c){ return c.id === charaId; });
+  if (!chara) return;
+  var val = getAffinity(charaId);
+  var pct = (val / MAX_AFFINITY) * 100;
+  document.getElementById("aff-chara-name").textContent = chara.name;
+  document.getElementById("aff-fill").style.width = pct + "%";
+  document.getElementById("aff-val").textContent = val + " / " + MAX_AFFINITY;
+  // ハート点滅
+  var heart = document.getElementById("aff-heart");
+  heart.style.opacity = "1";
+  heart.style.animation = "none";
+  setTimeout(function(){ heart.style.animation = "heartbeat .8s ease-in-out"; }, 10);
+  setTimeout(function(){ heart.style.opacity = "0"; }, 1200);
+  document.getElementById("affinity-bar").classList.add("visible");
+}
+
+function unlockEnd(charaId, endKey) {
+  var k = charaId + "_" + endKey;
+  saveData.ends[k] = true;
+  updateProgress();
+}
+function unlockStill(stillId) {
+  saveData.stills[stillId] = true;
+  updateProgress();
+}
+function updateProgress() {
+  var ec = Object.keys(saveData.ends).length;
+  var sc = Object.keys(saveData.stills).length;
+  var pct = (ec / 15) * 100;
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-text").textContent = ec + " / 15 END　│　" + sc + " STILL";
+  var ec2 = document.getElementById("end-count");
+  if (ec2) ec2.textContent = ec + " / 15";
+  var sc2 = document.getElementById("still-count");
+  if (sc2) sc2.textContent = sc + " / 15";
+}
+
+// ============================================================
+// ゲーム状態
+// ============================================================
+var heroName = "松樹　真琴";
+var currentChara = null;
+var currentRoute = "common";
+var currentIndex = 0;
+var isAuto = false;
+var isSkip = false;
+var autoTimer = null;
+var typeTimer = null;
+var isTyping = false;
+var fullText = "";
+var pageQueue = [];
+
+// ============================================================
+// パーティクル
+// ============================================================
+(function() {
+  var c = document.getElementById("particles");
+  for (var i = 0; i < 18; i++) {
+    var p = document.createElement("div");
+    p.className = "particle";
+    var s = Math.random() * 3 + 1;
+    p.style.cssText = "width:" + s + "px;height:" + s + "px;left:" + (Math.random()*100) + "%;animation-duration:" + (Math.random()*14+10) + "s;animation-delay:" + (Math.random()*12) + "s;";
+    c.appendChild(p);
+  }
+})();
+
+// ============================================================
+// 画面遷移
+// ============================================================
+function showScreen(id) {
+  var el = document.getElementById(id);
+  el.classList.add("visible");
+  setTimeout(function() { el.classList.add("shown"); }, 20);
+}
+function hideScreen(id) {
+  var el = document.getElementById(id);
+  el.classList.remove("shown");
+  setTimeout(function() { el.classList.remove("visible"); }, 650);
+}
+
+// ============================================================
+// タイトル → 名前入力
+// ============================================================
+function goToName() {
+  hideScreen("title-screen");
+  setTimeout(function() { showScreen("name-screen"); }, 300);
+}
+
+function confirmName() {
+  var v = document.getElementById("name-field").value.trim();
+  heroName = v || "松樹　真琴";
+  hideScreen("name-screen");
+  setTimeout(function() {
+    // 2周目以降は共通ルートスキップ→キャラ選択へ
+    if (saveData.clearedCommon) {
+      showCharaSelect();
+    } else {
+      currentChara = null;
+      currentRoute = "common";
+      currentIndex = 0;
+      document.getElementById("chara-label").textContent = "";
+      document.getElementById("game-screen").classList.add("visible");
+      renderScene();
+    }
+  }, 500);
+}
+
+function showCharaSelect() {
+  var grid = document.getElementById("chara-grid");
+  grid.innerHTML = "";
+  CHARACTERS.forEach(function(c) {
+    var card = document.createElement("div");
+    card.className = "chara-card";
+    card.innerHTML = '<div class="chara-icon">' + c.emoji + '</div><div class="chara-name">' + c.name + '</div><div class="chara-kana">' + c.kana + '</div>';
+    card.onclick = (function(ch) {
+      return function() { startCharaRoute(ch); };
+    })(c);
+    grid.appendChild(card);
+  });
+  showScreen("chara-screen");
+}
+
+function startCharaRoute(chara) {
+  currentChara = chara;
+  var routeKey = chara.id + "_route";
+  currentRoute = SCENARIO[routeKey] ? routeKey : "waka_end_preview";
+  currentIndex = 0;
+  hideScreen("chara-screen");
+  document.getElementById("chara-label").textContent = chara.name;
+  updateAffinityBar(chara.id);
+  setTimeout(function() {
+    document.getElementById("game-screen").classList.add("visible");
+    renderScene();
+  }, 400);
+}
+
+function backToTitle() {
+  document.getElementById("game-screen").classList.remove("visible");
+  hideScreen("end-screen");
+  hideScreen("chara-screen");
+  setTimeout(function() { showScreen("title-screen"); }, 300);
+}
+
+// ============================================================
+// シーン描画
+// ============================================================
+function renderScene() {
+  var scenes = SCENARIO[currentRoute];
+  if (!scenes || currentIndex >= scenes.length) return;
+  var scene = scenes[currentIndex];
+
+  document.getElementById("choices-overlay").classList.add("hidden");
+  document.getElementById("next-ind").style.opacity = "0";
+  document.getElementById("textbox").style.pointerEvents = "auto";
+
+  if (scene.bg) setBg(scene.bg);
+  if (scene.chara !== undefined) setCharaImg(scene.chara);
+
+  if (scene.type === "dialog") {
+    var isNarration = (scene.speaker === "narration");
+    var plate = document.getElementById("speaker-plate");
+    var nameEl = document.getElementById("speaker-name");
+    var tail = document.getElementById("speaker-tail");
+    var textEl = document.getElementById("dialog-text");
+
+    if (isNarration) {
+      plate.style.display = "none";
+      textEl.classList.add("narration");
+    } else {
+      plate.style.display = "inline-flex";
+      textEl.classList.remove("narration");
+      // フリガナ付きspeakerをそのまま表示（初登場時のみ付与してある）
+      var rawName = (scene.speaker === "heroine") ? heroName : scene.speaker;
+      nameEl.textContent = getDisplayName(rawName);
+      nameEl.style.fontSize = "";
+      tail.style.display = "block";
+    }
+    var txt = scene.text.replace(/\[主人公\]/g, heroName);
+    startTyping(txt);
+  }
+  else if (scene.type === "choice") {
+    document.getElementById("speaker-plate").style.display = "none";
+    document.getElementById("dialog-text").textContent = "";
+    document.getElementById("dialog-text").classList.remove("narration");
+    document.getElementById("textbox").style.pointerEvents = "none";
+    showChoices(scene.choices);
+  }
+  else if (scene.type === "jump") {
+    currentRoute = scene.next;
+    currentIndex = 0;
+    renderScene();
+  }
+  else if (scene.type === "scene_title") {
+    document.getElementById("scene-title-text").textContent = scene.text;
+    document.getElementById("scene-title-overlay").classList.add("visible");
+    document.getElementById("textbox").style.pointerEvents = "none";
+  }
+  else if (scene.type === "chara_select") {
+    saveData.clearedCommon = true;
+    document.getElementById("game-screen").classList.remove("visible");
+    document.getElementById("affinity-bar").classList.remove("visible");
+    setTimeout(function() { showCharaSelect(); }, 300);
+  }
+  else if (scene.type === "end") {
+    setTimeout(function() { showEnd(scene.endType, scene.endTitle); }, 600);
+  }
+}
+
+// ============================================================
+// テキスト表示（ページ分割）
+// ============================================================
+var MAX_PER_PAGE = 76;
+
+function splitPages(text) {
+  var lines = text.split("\n");
+  var pages = [];
+  var cur = "";
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var joined = cur ? cur + "\n" + line : line;
+    if (joined.length > MAX_PER_PAGE && cur) {
+      pages.push(cur);
+      cur = line;
+    } else {
+      cur = joined;
+    }
+  }
+  if (cur) pages.push(cur);
+  return pages;
+}
+
+function startTyping(text) {
+  var pages = splitPages(text);
+  pageQueue = pages.length > 1 ? pages.slice(1) : [];
+  typePage(pages[0]);
+}
+
+function typePage(text) {
+  isTyping = true;
+  fullText = text;
+  var el = document.getElementById("dialog-text");
+  el.textContent = "";
+  el.classList.add("typing-cursor");
+  document.getElementById("next-ind").style.opacity = "0";
+  var chars = Array.from(text);
+  var i = 0;
+  clearInterval(typeTimer);
+  var speed = isSkip ? 6 : 36;
+  typeTimer = setInterval(function() {
+    el.textContent += chars[i];
+    i++;
+    if (i >= chars.length) {
+      clearInterval(typeTimer);
+      el.classList.remove("typing-cursor");
+      isTyping = false;
+      document.getElementById("next-ind").style.opacity = "1";
+      if (isAuto || isSkip) {
+        autoTimer = setTimeout(nextScene, isSkip ? 80 : 2000);
+      }
+    }
+  }, speed);
+}
+
+function nextScene() {
+  if (!document.getElementById("choices-overlay").classList.contains("hidden")) return;
+  clearTimeout(autoTimer);
+  if (isTyping) {
+    clearInterval(typeTimer);
+    var el = document.getElementById("dialog-text");
+    el.textContent = fullText;
+    el.classList.remove("typing-cursor");
+    isTyping = false;
+    document.getElementById("next-ind").style.opacity = "1";
+    if (isAuto || isSkip) autoTimer = setTimeout(nextScene, isSkip ? 80 : 2000);
+    return;
+  }
+  if (pageQueue.length > 0) {
+    typePage(pageQueue.shift());
+    return;
+  }
+  currentIndex++;
+  renderScene();
+}
+
+// ============================================================
+// 選択肢
+// ============================================================
+function showChoices(choices) {
+  var overlay = document.getElementById("choices-overlay");
+  overlay.classList.remove("hidden");
+  var old = overlay.querySelectorAll(".choice-btn");
+  for (var i = 0; i < old.length; i++) old[i].remove();
+  for (var j = 0; j < choices.length; j++) {
+    (function(c) {
+      var btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = c.label;
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        // 好感度加算
+        if (c.affinity && currentChara) {
+          addAffinity(currentChara.id, c.affinity);
+        }
+        selectChoice(c.next);
+      };
+      overlay.appendChild(btn);
+    })(choices[j]);
+  }
+}
+
+function closeSceneTitle() {
+  document.getElementById("scene-title-overlay").classList.remove("visible");
+  document.getElementById("textbox").style.pointerEvents = "auto";
+  currentIndex++;
+  renderScene();
+}
+
+function selectChoice(next) {
+  document.getElementById("choices-overlay").classList.add("hidden");
+  currentRoute = next;
+  currentIndex = 0;
+  renderScene();
+}
+
+// ============================================================
+// エンド
+// ============================================================
+function showEnd(endType, endTitle) {
+  if (currentChara) {
+    var map = { "HAPPY END":"happy", "NORMAL END":"normal", "BAD END":"bad" };
+    unlockEnd(currentChara.id, map[endType] || "happy");
+  }
+  document.getElementById("game-screen").classList.remove("visible");
+  document.getElementById("end-type").textContent = endType;
+  document.getElementById("end-title").textContent = endTitle;
+  showScreen("end-screen");
+}
+
+// ============================================================
+// AUTO / SKIP
+// ============================================================
+function toggleAuto() {
+  isAuto = !isAuto;
+  document.getElementById("auto-btn").classList.toggle("active", isAuto);
+  if (isAuto && !isTyping) autoTimer = setTimeout(nextScene, 2000);
+  else clearTimeout(autoTimer);
+}
+function toggleSkip() {
+  isSkip = !isSkip;
+  document.getElementById("skip-btn").classList.toggle("active", isSkip);
+  if (isSkip && !isTyping) nextScene();
+}
+
+// ============================================================
+// メニュー
+// ============================================================
+function openMenu()  { document.getElementById("menu-overlay").classList.add("visible"); }
+function closeMenu() { document.getElementById("menu-overlay").classList.remove("visible"); }
+
+// ============================================================
+// 背景・立ち絵
+// ============================================================
+function setBg(f) {
+  var el = document.getElementById("bg-img");
+  el.classList.remove("loaded");
+  el.style.backgroundImage = "url('" + f + "')";
+  setTimeout(function() { el.classList.add("loaded"); }, 50);
+}
+function setCharaImg(f) {
+  var s = document.getElementById("chara-stand");
+  if (!f) {
+    s.innerHTML = '<div class="chara-placeholder">立ち絵エリア</div>';
+    return;
+  }
+  s.innerHTML = '<img src="' + f + '" alt="立ち絵">';
+}
+
+// ============================================================
+// エンディングリスト
+// ============================================================
+function openEnding() {
+  buildEndingGrid();
+  showScreen("ending-screen");
+}
+function closeEnding() { hideScreen("ending-screen"); }
+
+function buildEndingGrid() {
+  var grid = document.getElementById("ending-grid");
+  grid.innerHTML = "";
+  CHARACTERS.forEach(function(c) {
+    var cell = document.createElement("div");
+    cell.className = "end-chara-cell";
+    cell.innerHTML = '<span class="end-chara-emoji">' + c.emoji + '</span><span class="end-chara-name">' + c.name.replace(" ","<br>") + '</span>';
+    grid.appendChild(cell);
+  });
+  END_TYPES.forEach(function(et) {
+    CHARACTERS.forEach(function(c) {
+      var k = c.id + "_" + et.key;
+      var unlocked = !!saveData.ends[k];
+      var card = document.createElement("div");
+      card.className = "end-card" + (unlocked ? "" : " locked");
+      if (unlocked) {
+        card.innerHTML = '<div class="badge ' + et.cls + '">' + et.label + '</div><div class="end-card-title">' + END_TITLES[c.id][et.key] + '</div>';
+      } else {
+        card.innerHTML = '<div class="end-lock">🔒</div>';
+      }
+      grid.appendChild(card);
+    });
+  });
+}
+
+// ============================================================
+// スチルギャラリー
+// ============================================================
+function openStill() {
+  buildStillGrid();
+  showScreen("still-screen");
+}
+function closeStill() { hideScreen("still-screen"); }
+
+function buildStillGrid() {
+  var grid = document.getElementById("still-grid");
+  grid.innerHTML = "";
+  var isFirst = true;
+  CHARACTERS.forEach(function(chara) {
+    var list = STILLS.filter(function(s) { return s.charaId === chara.id; });
+    if (!list.length) return;
+    if (!isFirst) {
+      var sp = document.createElement("div");
+      sp.className = "still-spacer";
+      grid.appendChild(sp);
+    }
+    isFirst = false;
+    // キャラブロック（見出し＋カードグリッド）
+    var block = document.createElement("div");
+    block.style.cssText = "width:100%";
+    var sec = document.createElement("div");
+    sec.className = "still-section";
+    sec.innerHTML = '<div class="still-section-line"></div><div class="still-section-name">' + chara.emoji + "　" + chara.name + '</div><div class="still-section-line"></div>';
+    block.appendChild(sec);
+    var cardGrid = document.createElement("div");
+    cardGrid.className = "still-chara-cards";
+    list.forEach(function(s) {
+      var unlocked = !!saveData.stills[s.id];
+      var card = document.createElement("div");
+      card.className = "still-card" + (unlocked ? "" : " locked");
+      if (unlocked && s.file) {
+        card.innerHTML = '<div class="still-img-wrap"><img src="' + s.file + '" alt="' + s.caption + '"></div><div class="still-label">' + s.caption + '</div>';
+        card.onclick = function() { openViewer(s); };
+      } else if (unlocked) {
+        card.innerHTML = '<div class="still-img-wrap" style="display:flex;align-items:center;justify-content:center;background:rgba(196,154,216,.04)"><div style="font-size:10px;color:var(--accent);text-align:center;letter-spacing:.1em">IMAGE<br>COMING</div></div><div class="still-label">' + s.caption + '</div>';
+      } else {
+        var ci = CHARACTERS.find(function(c) { return c.id === s.charaId; });
+        card.innerHTML = '<div class="still-lock-box"><div class="still-lock-icon">🔒</div><div class="still-lock-name">' + (ci ? ci.emoji : "") + '</div></div>';
+      }
+      cardGrid.appendChild(card);
+    });
+    block.appendChild(cardGrid);
+    grid.appendChild(block);
+  });
+}
+
+function openViewer(s) {
+  document.getElementById("viewer-img").src = s.file;
+  document.getElementById("viewer-caption").textContent = s.caption;
+  document.getElementById("still-viewer").classList.remove("hidden");
+}
+function closeViewer() {
+  document.getElementById("still-viewer").classList.add("hidden");
+}
+
+// ============================================================
+// キーボード
+// ============================================================
+document.addEventListener("keydown", function(e) {
+  if (e.code === "Space" || e.code === "Enter" || e.code === "ArrowRight") {
+    if (document.getElementById("game-screen").classList.contains("visible")) {
+      e.preventDefault();
+      nextScene();
+    }
+  }
+  if (e.code === "Escape") {
+    if (document.getElementById("menu-overlay").classList.contains("visible")) closeMenu();
+    else if (document.getElementById("game-screen").classList.contains("visible")) openMenu();
+  }
+});
+</script>
+</body>
+</html>
